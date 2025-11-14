@@ -2,7 +2,7 @@
   "name": "TUBA - Painel Ferramentaria",
   "short_name": "TUBA",
   "description": "Painel rápido para gerenciamento mobile",
-  "start_url": "/",
+  "start_url": "/TUBA-APP-CELULAR/",
   "display": "standalone",
   "background_color": "#0b1220",
   "theme_color": "#0b1220",
