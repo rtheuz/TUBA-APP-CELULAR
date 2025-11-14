@@ -3,194 +3,563 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Sistema de gestão TUBA Ferramentaria">
   <title>TUBA</title>
   <link rel="icon" href="https://i.imgur.com/Msjz5L5.png">
   <link rel="apple-touch-icon" href="https://i.imgur.com/Msjz5L5.png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0b1220">
+  <meta name="theme-color" content="#000000">
   <style>
     :root {
-      --bg: #0b1220;
-      --card: #0f1724;
-      --accent: #1f6feb;
-      --muted: #9aa7bf;
-      --glass: rgba(255, 255, 255, 0.02);
+      --primary: #007AFF;
+      --primary-dark: #0051D5;
+      --success: #34C759;
+      --warning: #FF9500;
+      --error: #FF3B30;
+      --bg-primary: #000000;
+      --bg-secondary: #1C1C1E;
+      --bg-tertiary: #2C2C2E;
+      --text-primary: #FFFFFF;
+      --text-secondary: #8E8E93;
+      --separator: rgba(84, 84, 88, 0.6);
+      --card-shadow: rgba(0, 0, 0, 0.3);
+      --safe-area-top: env(safe-area-inset-top);
+      --safe-area-bottom: env(safe-area-inset-bottom);
     }
 
     * {
-      box-sizing: border-box
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg, var(--bg), #08101a);
-      color: #e6eef8;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      overscroll-behavior-y: contain;
     }
 
-    /* Splash */
+    /* Splash Screen */
     #splash {
       position: fixed;
       inset: 0;
-      background: #0b1220;
+      background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 10000;
       opacity: 1;
-      transition: opacity 1s ease;
+      transition: opacity 0.4s ease;
     }
 
     #splash img {
-      width: 120px;
-      height: 120px;
-      border-radius: 20px;
+      width: 100px;
+      height: 100px;
+      border-radius: 22.5%;
       opacity: 0;
-      transform: scale(0.9);
-      animation: fadeZoom 1.8s forwards;
+      transform: scale(0.8);
+      animation: fadeZoom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      box-shadow: 0 10px 40px rgba(0, 122, 255, 0.4);
     }
 
     #splash h1 {
-      color: #e6eef8;
-      margin-top: 12px;
-      font-size: 22px;
-      font-weight: 500;
-      letter-spacing: 1px;
+      color: var(--text-primary);
+      margin-top: 20px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
       opacity: 0;
-      animation: fadeText 2s 0.5s forwards;
+      animation: fadeText 0.6s 0.2s forwards;
+    }
+
+    #splash .version {
+      color: var(--text-secondary);
+      margin-top: 8px;
+      font-size: 13px;
+      opacity: 0;
+      animation: fadeText 0.6s 0.4s forwards;
     }
 
     @keyframes fadeZoom {
-      0% {
-        opacity: 0;
-        transform: scale(0.9);
-      }
-
-      100% {
+      to {
         opacity: 1;
         transform: scale(1);
       }
     }
 
     @keyframes fadeText {
-      0% {
-        opacity: 0;
-      }
-
-      100% {
+      to {
         opacity: 1;
       }
     }
 
-    /* Conteúdo principal */
-    .app {
-      display: none;
-      width: 100%;
-      max-width: 420px;
-      border-radius: 16px;
-      background: linear-gradient(180deg, var(--card), #0b1220);
-      box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
-      padding: 22px;
-      backdrop-filter: blur(6px);
-      margin: 0 auto;
-      min-height: 100vh;
-    }
-
-    .brand {
+    /* Pull to Refresh */
+    .pull-to-refresh {
+      position: fixed;
+      top: calc(var(--safe-area-top) + 70px);
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      background: var(--bg-secondary);
+      padding: 12px 24px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       display: flex;
-      gap: 12px;
       align-items: center;
-      margin-bottom: 10px;
-      position: sticky;
-      top: 0;
-      background: linear-gradient(180deg, var(--card), #0b1220);
-      z-index: 10;
-      padding-bottom: 8px;
+      gap: 10px;
+      z-index: 1000;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
-    .logo {
-      width: 64px;
-      height: 64px;
-      border-radius: 12px;
-      flex: 0 0 64px
+    .pull-to-refresh.show {
+      transform: translateX(-50%) scale(1);
     }
 
-    h1 {
-      font-size: 20px;
-      margin: 0
+    .pull-to-refresh .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--text-secondary);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
     }
 
-    p.subtitle {
-      margin: 4px 0 18px;
-      color: var(--muted);
-      font-size: 13px
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px
-    }
-
-    .btn {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 14px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), var(--glass));
-      cursor: pointer;
-      color: inherit;
-      text-align: left;
-      font-size: 15px;
-      transition: transform .08s ease, box-shadow .12s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(2, 6, 23, 0.5)
-    }
-
-    /* Alteração importante: usar contain para mostrar a imagem inteira */
-    .icon {
-      width: 36px;
-      height: 28px;
-      border-radius: 6px;
-      object-fit: contain;
-      /* antes estava cover — trocado para contain */
-      background: transparent;
-      flex: 0 0 36px;
-    }
-
-    .btn .label {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .btn .label .title {
+    /* Offline Banner */
+    .offline-banner {
+      position: fixed;
+      top: calc(var(--safe-area-top) + 70px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: var(--error);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(255, 59, 48, 0.3);
+      z-index: 1001;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-size: 14px;
       font-weight: 600;
     }
 
-    .btn .label .subtitle {
-      color: var(--muted);
+    .offline-banner.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Online Banner */
+    .online-banner {
+      position: fixed;
+      top: calc(var(--safe-area-top) + 70px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: var(--success);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(52, 199, 89, 0.3);
+      z-index: 1001;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .online-banner.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--safe-area-bottom) + 90px);
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 14px 24px;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      z-index: 1002;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-size: 15px;
+      font-weight: 500;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Main App Container */
+    .app {
+      display: none;
+      min-height: 100vh;
+      padding-top: calc(var(--safe-area-top) + 0px);
+      padding-bottom: calc(var(--safe-area-bottom) + 70px);
+      background: var(--bg-primary);
+      opacity: 0;
+      animation: fadeIn 0.3s 0.1s forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      z-index: 100;
+      padding: calc(var(--safe-area-top) + 16px) 20px 16px;
+      border-bottom: 0.5px solid var(--separator);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 10.5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-text h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      margin-bottom: 2px;
+    }
+
+    .header-text p {
       font-size: 13px;
-      margin-top: 2px;
+      color: var(--text-secondary);
+      font-weight: 400;
     }
 
+    /* Header Actions */
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-secondary);
+      border: none;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.9);
+      background: var(--bg-tertiary);
+    }
+
+    .icon-btn::before {
+      content: '';
+      font-size: 18px;
+    }
+
+    .settings-btn::before {
+      content: '⚙️';
+    }
+
+    .info-btn::before {
+      content: 'ℹ️';
+    }
+
+    /* Badge */
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--error);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 10px;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    /* Content */
+    .content {
+      padding: 20px 16px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .search-bar:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    }
+
+    .search-bar::before {
+      content: '🔍';
+      font-size: 16px;
+      opacity: 0.5;
+    }
+
+    .search-bar input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 16px;
+      font-family: inherit;
+    }
+
+    .search-bar input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    /* Cards Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    /* Button Card */
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: var(--bg-secondary);
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.05);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 1px 2px var(--card-shadow);
+    }
+
+    .btn:active::before {
+      opacity: 1;
+    }
+
+    .btn.loading {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    /* Icon Container */
+    .icon-wrapper {
+      width: 52px;
+      height: 52px;
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .icon {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+
+    /* Loading spinner on icon */
+    .icon-wrapper .spinner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--text-secondary);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    .btn.loading .icon-wrapper .spinner {
+      display: block;
+    }
+
+    .btn.loading .icon-wrapper .icon {
+      opacity: 0.3;
+    }
+
+    /* Label */
+    .label {
+      flex: 1;
+      text-align: left;
+    }
+
+    .label .title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+      letter-spacing: 0.1px;
+    }
+
+    .label .subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      line-height: 1.3;
+    }
+
+    /* Chevron */
+    .chevron {
+      color: var(--text-secondary);
+      font-size: 18px;
+      opacity: 0.5;
+      transition: transform 0.2s;
+    }
+
+    .btn:active .chevron {
+      transform: translateX(4px);
+    }
+
+    /* Section Header */
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding: 0 4px;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-title .count {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .section {
+      margin-bottom: 28px;
+    }
+
+    /* Footer */
     footer {
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 20px calc(var(--safe-area-bottom) + 12px);
+      background: rgba(28, 28, 30, 0.95);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-top: 0.5px solid var(--separator);
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    /* Área embutida */
+    .footer-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.offline {
+      background: var(--error);
+      animation: none;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    /* Iframe Container */
     #iframeContainer {
       display: none;
       width: 100%;
@@ -198,36 +567,364 @@
       position: fixed;
       top: 0;
       left: 0;
-      background: #0b1220;
+      background: var(--bg-primary);
       z-index: 9999;
       flex-direction: column;
+      animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+      }
+
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    #iframeContainer.closing {
+      animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(100%);
+      }
     }
 
     #iframeHeader {
-      background: #0f1724;
-      color: white;
-      padding: 10px;
+      background: rgba(28, 28, 30, 0.95);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      padding: calc(var(--safe-area-top) + 12px) 16px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-bottom: 0.5px solid var(--separator);
       position: sticky;
       top: 0;
+      z-index: 10;
+    }
+
+    #iframeHeader span {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
     }
 
     #iframeHeader button {
-      background: var(--accent);
+      background: var(--primary);
       border: none;
       color: white;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 14px;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
       cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    }
+
+    #iframeHeader button:active {
+      transform: scale(0.95);
+      background: var(--primary-dark);
     }
 
     #iframeContent {
       flex: 1;
       border: none;
       width: 100%;
+      background: white;
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+    }
+
+    .loading-overlay.show {
+      display: flex;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--bg-secondary);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10002;
+      padding: 20px;
+    }
+
+    .modal.show {
+      display: flex;
+      animation: fadeIn 0.2s;
+    }
+
+    .modal-content {
+      background: var(--bg-secondary);
+      border-radius: 20px;
+      padding: 24px;
+      max-width: 400px;
+      width: 100%;
+      animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .modal-body {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .modal-btn.secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .modal-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Settings Panel */
+    .settings-panel {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 85%;
+      max-width: 400px;
+      height: 100vh;
+      background: var(--bg-secondary);
+      z-index: 10003;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+      padding: calc(var(--safe-area-top) + 20px) 20px calc(var(--safe-area-bottom) + 20px);
+    }
+
+    .settings-panel.show {
+      right: 0;
+    }
+
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10002;
+      display: none;
+    }
+
+    .settings-overlay.show {
+      display: block;
+      animation: fadeIn 0.2s;
+    }
+
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .settings-header h2 {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      background: var(--bg-tertiary);
+      border: none;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .close-btn:active {
+      transform: scale(0.9);
+    }
+
+    .settings-section {
+      margin-bottom: 24px;
+    }
+
+    .settings-section h3 {
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .setting-item {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .setting-item .info {
+      flex: 1;
+    }
+
+    .setting-item .title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .setting-item .description {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* Toggle Switch */
+    .toggle {
+      width: 51px;
+      height: 31px;
+      background: var(--bg-primary);
+      border-radius: 31px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle.active {
+      background: var(--success);
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 27px;
+      height: 27px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s;
+    }
+
+    .toggle.active::after {
+      transform: translateX(20px);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-state .emoji {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    /* Skeleton Loading */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    @keyframes loading {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .skeleton-card {
+      height: 84px;
+      margin-bottom: 12px;
+      border-radius: 14px;
     }
   </style>
 </head>
@@ -236,156 +933,688 @@
   <!-- SPLASH SCREEN -->
   <div id="splash">
     <audio id="splashSound">
-      <source src="data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAACAAACcQCAAWFkaWAAAAAA"
-        type="audio/mp3">
+      <source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mp3">
     </audio>
     <img src="https://i.imgur.com/Msjz5L5.png" alt="TUBA Logo">
     <h1>TUBA</h1>
+    <p class="version">v2.0</p>
+  </div>
+
+  <!-- PULL TO REFRESH -->
+  <div class="pull-to-refresh" id="pullToRefresh">
+    <div class="spinner"></div>
+    <span>Atualizando...</span>
+  </div>
+
+  <!-- OFFLINE BANNER -->
+  <div class="offline-banner" id="offlineBanner">
+    ⚠️ Você está offline
+  </div>
+
+  <!-- ONLINE BANNER -->
+  <div class="online-banner" id="onlineBanner">
+    ✓ Conectado
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- LOADING OVERLAY -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- SETTINGS OVERLAY -->
+  <div class="settings-overlay" id="settingsOverlay" onclick="closeSettings()"></div>
+
+  <!-- SETTINGS PANEL -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">
+      <h2>Configurações</h2>
+      <button class="close-btn" onclick="closeSettings()">✕</button>
+    </div>
+
+    <div class="settings-section">
+      <h3>Preferências</h3>
+      <div class="setting-item">
+        <div class="info">
+          <div class="title">Som</div>
+          <div class="description">Reproduzir sons ao interagir</div>
+        </div>
+        <div class="toggle active" id="soundToggle" onclick="toggleSound()"></div>
+      </div>
+      <div class="setting-item">
+        <div class="info">
+          <div class="title">Vibração</div>
+          <div class="description">Feedback tátil ao tocar</div>
+        </div>
+        <div class="toggle active" id="hapticToggle" onclick="toggleHaptic()"></div>
+      </div>
+      <div class="setting-item">
+        <div class="info">
+          <div class="title">Notificações</div>
+          <div class="description">Receber alertas importantes</div>
+        </div>
+        <div class="toggle" id="notifToggle" onclick="toggleNotifications()"></div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Sobre</h3>
+      <div class="setting-item">
+        <div class="info">
+          <div class="title">Versão</div>
+          <div class="description">2.0.0</div>
+        </div>
+      </div>
+      <div class="setting-item">
+        <div class="info">
+          <div class="title">Última atualização</div>
+          <div class="description" id="lastUpdate">Calculando...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <button class="modal-btn primary" onclick="clearCache()" style="width: 100%;">
+        🗑️ Limpar cache
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div class="modal-header" id="modalTitle">Título</div>
+      <div class="modal-body" id="modalBody">Conteúdo</div>
+      <div class="modal-footer">
+        <button class="modal-btn secondary" onclick="closeModal()">Cancelar</button>
+        <button class="modal-btn primary" id="modalConfirm" onclick="closeModal()">OK</button>
+      </div>
+    </div>
   </div>
 
   <!-- MENU PRINCIPAL -->
-  <div class="app" id="menu" role="application" aria-label="TUBA">
-    <div class="brand">
-      <img class="logo" src="https://i.imgur.com/Msjz5L5.png" alt="TUBA">
-      <div>
-        <h1>TUBA</h1>
-        <p class="subtitle">Painel rápido para celular</p>
-      </div>
-    </div>
-
-    <div class="grid">
-      <button class="btn"
-        onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=orcamentos')"
-        aria-label="Manutenção">
-        <img class="icon" src="https://i.imgur.com/rAwvYDB.png" alt="Ícone Orcamentos">
-        <div class="label">
-          <div class="title">Projetos</div>
-          <div class="subtitle">Adicionar / Criar / Gerenciar projetos</div>
+  <div class="app" id="menu">
+    <div class="header">
+      <div class="header-content">
+        <div class="header-left">
+          <img class="header-logo" src="https://i.imgur.com/Msjz5L5.png" alt="TUBA">
+          <div class="header-text">
+            <h1>TUBA</h1>
+            <p>Ferramentaria</p>
+          </div>
         </div>
-      </button>
-
-      <div class="grid">
-        <button class="btn"
-          onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=veiculos')"
-          aria-label="Veículos">
-          <img class="icon" src="https://i.imgur.com/ZHhQ7aM.png" alt="Ícone Veículos">
-          <div class="label">
-            <div class="title">Saída de veículos</div>
-            <div class="subtitle">Registrar saída de veículos</div>
-          </div>
-        </button>
-
-        <button class="btn"
-          onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=veiculos_list')"
-          aria-label="Etiquetas">
-          <img class="icon" src="https://i.imgur.com/R44riCQ.png" alt="Ícone Etiquetas">
-          <div class="label">
-            <div class="title">Retorno de Veículos</div>
-            <div class="subtitle">Registrar a volta de veículos</div>
-          </div>
-        </button>
-
-        <button class="btn"
-          onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=manutencao')"
-          aria-label="Manutenção">
-          <img class="icon" src="https://i.imgur.com/u62nzLn.png" alt="Ícone Manutenção">
-          <div class="label">
-            <div class="title">Manutenção</div>
-            <div class="subtitle">Acompanhar e registrar manutenções das máquinas</div>
-          </div>
-        </button>
-
-        <button class="btn"
-          onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=materiais')"
-          aria-label="Materiais">
-          <img class="icon" src="https://i.imgur.com/C1k7D4E.png" alt="Ícone Materiais">
-          <div class="label">
-            <div class="title">Materiais</div>
-            <div class="subtitle">Controle de estoque e saída</div>
-          </div>
-        </button>
-
-        <button class="btn"
-          onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=kanban')"
-          aria-label="Linha de produção Kanban">
-          <img class="icon" src="https://i.imgur.com/N9J1w9X.png" alt="Ícone Kanban">
-          <div class="label">
-            <div class="title">Linha de produção</div>
-            <div class="subtitle">Tarefas em produção</div>
-          </div>
-        </button>
-
-        <button class="btn"
-          onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=geradoretiquetas')"
-          aria-label="Etiquetas">
-          <img class="icon" src="https://i.imgur.com/LIeQOca.png" alt="Ícone Etiquetas">
-          <div class="label">
-            <div class="title">Etiquetas</div>
-            <div class="subtitle">Gerar etiquetas</div>
-          </div>
-        </button>
-
-        <button class="btn"
-          onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=pedidos')"
-          aria-label="Etiquetas">
-          <img class="icon" src="https://i.imgur.com/w2y1EzK.png" alt="Ícone Etiquetas">
-          <div class="label">
-            <div class="title">Pedidos</div>
-            <div class="subtitle">Controlar Status e situação de pedidos</div>
-          </div>
-        </button>
+        <div class="header-actions">
+          <button class="icon-btn info-btn" onclick="showInfo()" aria-label="Informações"></button>
+          <button class="icon-btn settings-btn" onclick="openSettings()" aria-label="Configurações"></button>
+        </div>
       </div>
-
-      <footer>Versão 1 — TUBA FERRAMENTARIA LTDA</footer>
     </div>
 
-    <!-- VISUALIZAÇÃO EMBUTIDA -->
-    <div id="iframeContainer">
-      <div id="iframeHeader">
-        <span>TUBA</span>
-        <button onclick="voltar()">⬅ Voltar</button>
+    <div class="content">
+      <!-- Search Bar -->
+      <div class="search-bar">
+        <input type="text" placeholder="Buscar..." id="searchInput" oninput="filterCards()">
       </div>
-      <iframe id="iframeContent"></iframe>
+
+      <div class="section">
+        <h2 class="section-title">
+          Gestão
+          <span class="count">3 itens</span>
+        </h2>
+        <div class="grid" data-category="gestao">
+          <button class="btn" data-search="projetos gerenciar criar"
+            onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=orcamentos', 'Projetos')">
+            <div class="icon-wrapper">
+              <img class="icon" src="https://i.imgur.com/rAwvYDB.png" alt="Projetos">
+              <div class="spinner"></div>
+            </div>
+            <div class="label">
+              <div class="title">Projetos</div>
+              <div class="subtitle">Gerenciar e criar novos projetos</div>
+            </div>
+            <span class="chevron">›</span>
+          </button>
+
+          <button class="btn" data-search="pedidos status situação"
+            onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=pedidos', 'Pedidos')">
+            <div class="icon-wrapper">
+              <img class="icon" src="https://i.imgur.com/w2y1EzK.png" alt="Pedidos">
+              <div class="spinner"></div>
+            </div>
+            <div class="label">
+              <div class="title">Pedidos</div>
+              <div class="subtitle">Status e situação de pedidos</div>
+            </div>
+            <span class="chevron">›</span>
+          </button>
+
+          <button class="btn" data-search="linha produção kanban tarefas"
+            onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=kanban', 'Linha de produção')">
+            <div class="icon-wrapper">
+              <img class="icon" src="https://i.imgur.com/N9J1w9X.png" alt="Kanban">
+              <div class="spinner"></div>
+            </div>
+            <div class="label">
+              <div class="title">Linha de produção</div>
+              <div class="subtitle">Tarefas em andamento</div>
+            </div>
+            <span class="chevron">›</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">
+          Veículos
+          <span class="count">2 itens</span>
+        </h2>
+        <div class="grid" data-category="veiculos">
+          <button class="btn" data-search="saída veículos registrar"
+            onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=veiculos', 'Saída de veículos')">
+            <div class="icon-wrapper">
+              <img class="icon" src="https://i.imgur.com/ZHhQ7aM.png" alt="Saída">
+              <div class="spinner"></div>
+            </div>
+            <div class="label">
+              <div class="title">Saída de veículos</div>
+              <div class="subtitle">Registrar saída</div>
+            </div>
+            <span class="chevron">›</span>
+          </button>
+
+          <button class="btn" data-search="retorno veículos volta"
+            onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=veiculos_list', 'Retorno de veículos')">
+            <div class="icon-wrapper">
+              <img class="icon" src="https://i.imgur.com/R44riCQ.png" alt="Retorno">
+              <div class="spinner"></div>
+            </div>
+            <div class="label">
+              <div class="title">Retorno de veículos</div>
+              <div class="subtitle">Registrar retorno</div>
+            </div>
+            <span class="chevron">›</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">
+          Operações
+          <span class="count">3 itens</span>
+        </h2>
+        <div class="grid" data-category="operacoes">
+          <button class="btn" data-search="manutenção máquinas equipamentos"
+            onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=manutencao', 'Manutenção')">
+            <div class="icon-wrapper">
+              <img class="icon" src="https://i.imgur.com/u62nzLn.png" alt="Manutenção">
+              <div class="spinner"></div>
+            </div>
+            <div class="label">
+              <div class="title">Manutenção</div>
+              <div class="subtitle">Registrar manutenções</div>
+            </div>
+            <span class="chevron">›</span>
+          </button>
+
+          <button class="btn" data-search="materiais estoque controle"
+            onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=materiais', 'Materiais')">
+            <div class="icon-wrapper">
+              <img class="icon" src="https://i.imgur.com/C1k7D4E.png" alt="Materiais">
+              <div class="spinner"></div>
+            </div>
+            <div class="label">
+              <div class="title">Materiais</div>
+              <div class="subtitle">Controle de estoque</div>
+            </div>
+            <span class="chevron">›</span>
+          </button>
+
+          <button class="btn" data-search="etiquetas gerar imprimir"
+            onclick="abrir('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=geradoretiquetas', 'Etiquetas')">
+            <div class="icon-wrapper">
+              <img class="icon" src="https://i.imgur.com/LIeQOca.png" alt="Etiquetas">
+              <div class="spinner"></div>
+            </div>
+            <div class="label">
+              <div class="title">Etiquetas</div>
+              <div class="subtitle">Gerar etiquetas</div>
+            </div>
+            <span class="chevron">›</span>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <script>
-      // SPLASH ANIMADO COM SOM
-      window.addEventListener("load", () => {
-        const splash = document.getElementById("splash");
-        const menu = document.getElementById("menu");
-        const sound = document.getElementById("splashSound");
+    <footer>
+      <div class="footer-status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Online</span>
+      </div>
+      <span>© 2025 TUBA · v2.0</span>
+    </footer>
+  </div>
 
-        try { sound.play().catch(() => { }); } catch { }
+  <!-- VISUALIZAÇÃO EMBUTIDA -->
+  <div id="iframeContainer">
+    <div id="iframeHeader">
+      <span id="iframeTitle">TUBA</span>
+      <button onclick="voltar()">Voltar</button>
+    </div>
+    <iframe id="iframeContent"></iframe>
+  </div>
 
+  <script>
+    // ==================== CONFIGURAÇÕES ====================
+    let settings = {
+      sound: true,
+      haptic: true,
+      notifications: false
+    };
+
+    // Carregar configurações do localStorage
+    function loadSettings() {
+      const saved = localStorage.getItem('tubaSettings');
+      if (saved) {
+        settings = { ...settings, ...JSON.parse(saved) };
+        updateSettingsUI();
+      }
+    }
+
+    function saveSettings() {
+      localStorage.setItem('tubaSettings', JSON.stringify(settings));
+    }
+
+    function updateSettingsUI() {
+      document.getElementById('soundToggle').classList.toggle('active', settings.sound);
+      document.getElementById('hapticToggle').classList.toggle('active', settings.haptic);
+      document.getElementById('notifToggle').classList.toggle('active', settings.notifications);
+    }
+
+    // ==================== ÁUDIO ====================
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioContext = new AudioContext();
+
+    function playStartupSound() {
+      if (!settings.sound) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    }
+
+    function playClickSound() {
+      if (!settings.sound) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+
+      gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.05);
+    }
+
+    function playSuccessSound() {
+      if (!settings.sound) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.1);
+
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.2);
+    }
+
+    // ==================== VIBRAÇÃO ====================
+    function vibrate(pattern = [10]) {
+      if (settings.haptic && 'vibrate' in navigator) {
+        navigator.vibrate(pattern);
+      }
+    }
+
+    // ==================== SPLASH SCREEN ====================
+    window.addEventListener("load", () => {
+      loadSettings();
+
+      const splash = document.getElementById("splash");
+      const menu = document.getElementById("menu");
+      const sound = document.getElementById("splashSound");
+
+      try {
+        sound.play().catch(() => {
+          playStartupSound();
+        });
+      } catch {
+        playStartupSound();
+      }
+
+      vibrate([20, 10, 20]);
+
+      setTimeout(() => {
+        splash.style.opacity = "0";
         setTimeout(() => {
-          splash.style.opacity = "0";
-          setTimeout(() => {
-            splash.style.display = "none";
-            menu.style.display = "block";
-          }, 1000);
-        }, 1800);
+          splash.style.display = "none";
+          menu.style.display = "block";
+          updateLastUpdate();
+        }, 400);
+      }, 1200);
+    });
+
+    // ==================== INTERAÇÕES ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      const buttons = document.querySelectorAll('.btn');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          playClickSound();
+          vibrate([5]);
+        });
       });
 
-      function abrir(url) {
+      // Prevenir zoom
+      document.addEventListener('gesturestart', e => e.preventDefault());
+      document.addEventListener('gesturechange', e => e.preventDefault());
+      document.addEventListener('gestureend', e => e.preventDefault());
+
+      // Habilitar áudio no primeiro toque
+      document.addEventListener('touchstart', function enableAudio() {
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        document.removeEventListener('touchstart', enableAudio);
+      }, { once: true });
+    });
+
+    // ==================== NAVEGAÇÃO ====================
+    function abrir(url, title) {
+      const btn = event.currentTarget;
+      btn.classList.add('loading');
+
+      setTimeout(() => {
         document.getElementById('menu').style.display = 'none';
         document.getElementById('iframeContainer').style.display = 'flex';
+        document.getElementById('iframeTitle').textContent = title;
         document.getElementById('iframeContent').src = url;
-      }
+        document.body.style.overflow = 'hidden';
 
-      function voltar() {
-        document.getElementById('iframeContainer').style.display = 'none';
+        btn.classList.remove('loading');
+        showToast(`Abrindo ${title}...`);
+      }, 300);
+    }
+
+    function voltar() {
+      playClickSound();
+      vibrate([5]);
+
+      const container = document.getElementById('iframeContainer');
+      container.classList.add('closing');
+
+      setTimeout(() => {
+        container.style.display = 'none';
+        container.classList.remove('closing');
         document.getElementById('menu').style.display = 'block';
         document.getElementById('iframeContent').src = '';
-      }
+        document.body.style.overflow = '';
+      }, 300);
+    }
 
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function (registrations) {
-          for (let registration of registrations) {
-            registration.unregister();
+    // ==================== BUSCA ====================
+    function filterCards() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const buttons = document.querySelectorAll('.btn');
+
+      buttons.forEach(btn => {
+        const searchText = btn.getAttribute('data-search') || '';
+        const title = btn.querySelector('.title').textContent.toLowerCase();
+        const subtitle = btn.querySelector('.subtitle').textContent.toLowerCase();
+
+        const matches = searchText.includes(search) ||
+          title.includes(search) ||
+          subtitle.includes(search);
+
+        btn.style.display = matches ? 'flex' : 'none';
+      });
+
+      if (search) {
+        vibrate([3]);
+      }
+    }
+
+    // ==================== TOAST ====================
+    function showToast(message, duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    // ==================== PULL TO REFRESH ====================
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let isPulling = false;
+
+    document.addEventListener('touchstart', (e) => {
+      if (window.scrollY === 0 && document.getElementById('menu').style.display !== 'none') {
+        touchStartY = e.touches[0].clientY;
+      }
+    });
+
+    document.addEventListener('touchmove', (e) => {
+      if (window.scrollY === 0 && document.getElementById('menu').style.display !== 'none') {
+        touchEndY = e.touches[0].clientY;
+        const pullDistance = touchEndY - touchStartY;
+
+        if (pullDistance > 80 && !isPulling) {
+          isPulling = true;
+          document.getElementById('pullToRefresh').classList.add('show');
+          vibrate([10]);
+        }
+      }
+    });
+
+    document.addEventListener('touchend', () => {
+      if (isPulling) {
+        refresh();
+        setTimeout(() => {
+          document.getElementById('pullToRefresh').classList.remove('show');
+          isPulling = false;
+        }, 1500);
+      }
+      touchStartY = 0;
+      touchEndY = 0;
+    });
+
+    function refresh() {
+      playSuccessSound();
+      showToast('Atualizado!', 2000);
+    }
+
+    // ==================== ONLINE/OFFLINE ====================
+    window.addEventListener('online', () => {
+      document.getElementById('statusDot').classList.remove('offline');
+      document.getElementById('statusText').textContent = 'Online';
+      document.getElementById('onlineBanner').classList.add('show');
+      playSuccessSound();
+
+      setTimeout(() => {
+        document.getElementById('onlineBanner').classList.remove('show');
+      }, 3000);
+    });
+
+    window.addEventListener('offline', () => {
+      document.getElementById('statusDot').classList.add('offline');
+      document.getElementById('statusText').textContent = 'Offline';
+      document.getElementById('offlineBanner').classList.add('show');
+      vibrate([20, 10, 20]);
+
+      setTimeout(() => {
+        document.getElementById('offlineBanner').classList.remove('show');
+      }, 5000);
+    });
+
+    // ==================== CONFIGURAÇÕES ====================
+    function openSettings() {
+      playClickSound();
+      vibrate([5]);
+      document.getElementById('settingsPanel').classList.add('show');
+      document.getElementById('settingsOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSettings() {
+      playClickSound();
+      vibrate([5]);
+      document.getElementById('settingsPanel').classList.remove('show');
+      document.getElementById('settingsOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    function toggleSound() {
+      settings.sound = !settings.sound;
+      updateSettingsUI();
+      saveSettings();
+      vibrate([5]);
+      if (settings.sound) {
+        playSuccessSound();
+      }
+    }
+
+    function toggleHaptic() {
+      settings.haptic = !settings.haptic;
+      updateSettingsUI();
+      saveSettings();
+      vibrate([5]);
+    }
+
+    function toggleNotifications() {
+      settings.notifications = !settings.notifications;
+      updateSettingsUI();
+      saveSettings();
+      vibrate([5]);
+      playClickSound();
+
+      if (settings.notifications && 'Notification' in window) {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            showToast('Notificações ativadas!');
+          } else {
+            settings.notifications = false;
+            updateSettingsUI();
+            saveSettings();
+            showToast('Permissão negada');
           }
         });
       }
-    </script>
+    }
+
+    function clearCache() {
+      playClickSound();
+      vibrate([5]);
+
+      if (confirm('Deseja limpar o cache do aplicativo?')) {
+        localStorage.clear();
+        if ('caches' in window) {
+          caches.keys().then(names => {
+            names.forEach(name => caches.delete(name));
+          });
+        }
+        showToast('Cache limpo com sucesso!');
+        setTimeout(() => window.location.reload(), 1500);
+      }
+    }
+
+    // ==================== MODAL ====================
+    function showModal(title, body, confirmText = 'OK', onConfirm = null) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalBody').textContent = body;
+      document.getElementById('modalConfirm').textContent = confirmText;
+      document.getElementById('modal').classList.add('show');
+
+      if (onConfirm) {
+        document.getElementById('modalConfirm').onclick = () => {
+          onConfirm();
+          closeModal();
+        };
+      }
+
+      playClickSound();
+      vibrate([5]);
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('show');
+      playClickSound();
+      vibrate([5]);
+    }
+
+    function showInfo() {
+      showModal(
+        'TUBA v2.0',
+        'Sistema de gestão integrada para TUBA Ferramentaria. Desenvolvido para otimizar processos e aumentar a produtividade.',
+        'Fechar'
+      );
+    }
+
+    function updateLastUpdate() {
+      const now = new Date();
+      const formatted = now.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      document.getElementById('lastUpdate').textContent = formatted;
+    }
+
+    // ==================== SERVICE WORKER ====================
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(reg => console.log('Service Worker registrado!', reg))
+          .catch(err => console.log('Erro ao registrar Service Worker', err));
+      });
+    }
+
+    // ==================== PREVENIR COMPORTAMENTO PADRÃO ====================
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('selectstart', e => {
+      if (e.target.tagName !== 'INPUT') e.preventDefault();
+    });
+  </script>
 </body>
 
 </html>
