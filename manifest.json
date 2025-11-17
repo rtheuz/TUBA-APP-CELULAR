@@ -1,8 +1,8 @@
 {
-  "name": "TUBA - Painel Ferramentaria",
+  "name": "TUBA",
   "short_name": "TUBA",
-  "description": "Painel rápido para gerenciamento mobile",
-  "start_url": "/TUBA-APP-CELULAR/",
+  "description": "Painel rápido da TUBA Ferramentaria",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0b1220",
   "theme_color": "#0b1220",
@@ -10,9 +10,14 @@
   "icons": [
     {
       "src": "https://i.imgur.com/Msjz5L5.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.imgur.com/Msjz5L5.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
+
