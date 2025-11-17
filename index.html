@@ -143,48 +143,6 @@
       }
     }
 
-    /* Offline Banner */
-    .offline-banner {
-      position: fixed;
-      top: calc(var(--safe-area-top) + 70px);
-      left: 50%;
-      transform: translateX(-50%) translateY(-100px);
-      background: var(--error);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(255, 59, 48, 0.3);
-      z-index: 1001;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .offline-banner.show {
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* Online Banner */
-    .online-banner {
-      position: fixed;
-      top: calc(var(--safe-area-top) + 70px);
-      left: 50%;
-      transform: translateX(-50%) translateY(-100px);
-      background: var(--success);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(52, 199, 89, 0.3);
-      z-index: 1001;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .online-banner.show {
-      transform: translateX(-50%) translateY(0);
-    }
-
     /* Toast Notification */
     .toast {
       position: fixed;
@@ -946,16 +904,6 @@
     <span>Atualizando...</span>
   </div>
 
-  <!-- OFFLINE BANNER -->
-  <div class="offline-banner" id="offlineBanner">
-    ⚠️ Você está offline
-  </div>
-
-  <!-- ONLINE BANNER -->
-  <div class="online-banner" id="onlineBanner">
-    ✓ Conectado
-  </div>
-
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
@@ -1515,23 +1463,17 @@
     window.addEventListener('online', () => {
       document.getElementById('statusDot').classList.remove('offline');
       document.getElementById('statusText').textContent = 'Online';
-      document.getElementById('onlineBanner').classList.add('show');
+
       playSuccessSound();
 
-      setTimeout(() => {
-        document.getElementById('onlineBanner').classList.remove('show');
-      }, 3000);
     });
 
     window.addEventListener('offline', () => {
       document.getElementById('statusDot').classList.add('offline');
       document.getElementById('statusText').textContent = 'Offline';
-      document.getElementById('offlineBanner').classList.add('show');
+
       vibrate([20, 10, 20]);
 
-      setTimeout(() => {
-        document.getElementById('offlineBanner').classList.remove('show');
-      }, 5000);
     });
 
     // ==================== CONFIGURAÇÕES ====================
