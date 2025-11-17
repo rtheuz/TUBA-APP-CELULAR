@@ -1282,8 +1282,7 @@
             // Se NÃO tem token, força o login imediatamente.
             // Abre o iframe na página de login.
             console.log("Nenhum token encontrado. Forçando login.");
-            openPage(WEBAPP_URL + '?page=login', 'Login Obrigatório');
-          }
+            openPage(WEBAPP_URL + '?page=login&embedded=1', 'Login Obrigatório');
         }, 400);
       }, 1200);
     });
