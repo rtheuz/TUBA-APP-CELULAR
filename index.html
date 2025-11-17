@@ -548,9 +548,12 @@
     }
 
     @keyframes pulse {
-      0%, 100% {
+
+      0%,
+      100% {
         opacity: 1;
       }
+
       50% {
         opacity: 0.5;
       }
@@ -574,6 +577,7 @@
       from {
         transform: translateX(100%);
       }
+
       to {
         transform: translateX(0);
       }
@@ -587,6 +591,7 @@
       from {
         transform: translateX(0);
       }
+
       to {
         transform: translateX(100%);
       }
@@ -696,6 +701,7 @@
         transform: scale(0.8);
         opacity: 0;
       }
+
       to {
         transform: scale(1);
         opacity: 1;
@@ -909,6 +915,7 @@
       0% {
         background-position: 200% 0;
       }
+
       100% {
         background-position: -200% 0;
       }
@@ -1057,7 +1064,7 @@
           <span class="count">3 itens</span>
         </h2>
         <div class="grid" data-category="gestao">
-          <button class="btn" data-search="projetos gerenciar criar"
+          <button class="btn"
             onclick="openPage('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=orcamentos', 'Projetos')">
             <div class="icon-wrapper">
               <img class="icon" src="https://i.imgur.com/rAwvYDB.png" alt="Projetos">
@@ -1070,7 +1077,7 @@
             <span class="chevron">›</span>
           </button>
 
-          <button class="btn" data-search="pedidos status situação"
+          <button class="btn"
             onclick="openPage('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=pedidos', 'Pedidos')">
             <div class="icon-wrapper">
               <img class="icon" src="https://i.imgur.com/w2y1EzK.png" alt="Pedidos">
@@ -1083,7 +1090,7 @@
             <span class="chevron">›</span>
           </button>
 
-          <button class="btn" data-search="linha produção kanban tarefas"
+          <button class="btn"
             onclick="openPage('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=kanban', 'Linha de produção')">
             <div class="icon-wrapper">
               <img class="icon" src="https://i.imgur.com/N9J1w9X.png" alt="Kanban">
@@ -1104,7 +1111,7 @@
           <span class="count">2 itens</span>
         </h2>
         <div class="grid" data-category="veiculos">
-          <button class="btn" data-search="saída veículos registrar"
+          <button class="btn"
             onclick="openPage('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=veiculos', 'Saída de veículos')">
             <div class="icon-wrapper">
               <img class="icon" src="https://i.imgur.com/ZHhQ7aM.png" alt="Saída">
@@ -1117,7 +1124,7 @@
             <span class="chevron">›</span>
           </button>
 
-          <button class="btn" data-search="retorno veículos volta"
+          <button class="btn"
             onclick="openPage('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=veiculos_list', 'Retorno de veículos')">
             <div class="icon-wrapper">
               <img class="icon" src="https://i.imgur.com/R44riCQ.png" alt="Retorno">
@@ -1138,7 +1145,7 @@
           <span class="count">3 itens</span>
         </h2>
         <div class="grid" data-category="operacoes">
-          <button class="btn" data-search="manutenção máquinas equipamentos"
+          <button class="btn"
             onclick="openPage('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=manutencao', 'Manutenção')">
             <div class="icon-wrapper">
               <img class="icon" src="https://i.imgur.com/u62nzLn.png" alt="Manutenção">
@@ -1151,7 +1158,7 @@
             <span class="chevron">›</span>
           </button>
 
-          <button class="btn" data-search="materiais estoque controle"
+          <button class="btn"
             onclick="openPage('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=materiais', 'Materiais')">
             <div class="icon-wrapper">
               <img class="icon" src="https://i.imgur.com/C1k7D4E.png" alt="Materiais">
@@ -1164,7 +1171,7 @@
             <span class="chevron">›</span>
           </button>
 
-          <button class="btn" data-search="etiquetas gerar imprimir"
+          <button class="btn"
             onclick="openPage('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=geradoretiquetas', 'Etiquetas')">
             <div class="icon-wrapper">
               <img class="icon" src="https://i.imgur.com/LIeQOca.png" alt="Etiquetas">
@@ -1200,6 +1207,8 @@
 
   <script>
     // ==================== CONFIGURAÇÕES ====================
+
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec";
     let settings = {
       sound: true,
       haptic: true,
@@ -1228,9 +1237,65 @@
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const audioContext = new AudioContext();
 
-    function playStartupSound() { /* ... seu código sem alterações ... */ }
-    function playClickSound() { /* ... seu código sem alterações ... */ }
-    function playSuccessSound() { /* ... seu código sem alterações ... */ }
+    function playStartupSound() {
+      if (!settings.sound) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    }
+
+    function playClickSound() {
+      if (!settings.sound) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+
+      gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.05);
+    }
+
+    function playSuccessSound() {
+      if (!settings.sound) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.1);
+
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.2);
+    }
 
     // ==================== VIBRAÇÃO ====================
     function vibrate(pattern = [10]) {
@@ -1239,28 +1304,37 @@
       }
     }
 
-    // ==================== SPLASH SCREEN ====================
+    / ==================== INICIALIZAÇÃO DO APP ====================
     window.addEventListener("load", () => {
       loadSettings();
-      // <<< ADICIONADO >>> Garante que o botão de fechar do iframe esteja configurado
+      // <<< CORRIGIDO >>> Garante que o botão de fechar do iframe chame a função correta
       document.querySelector('#iframeHeader button').onclick = closeIframe;
-      
+
       const splash = document.getElementById("splash");
-      // <<< CORRIGIDO >>> O ID do elemento principal é 'app', não 'menu'
-      const app = document.querySelector(".app"); 
+      const app = document.querySelector(".app");
       const sound = document.getElementById("splashSound");
 
-      try { sound.play().catch(() => { playStartupSound(); }); } 
+      try { sound.play().catch(() => { playStartupSound(); }); }
       catch { playStartupSound(); }
-
       vibrate([20, 10, 20]);
 
+      // <<< A GRANDE MUDANÇA ESTÁ AQUI >>>
+      // Lógica para verificar o token antes de mostrar o menu.
       setTimeout(() => {
         splash.style.opacity = "0";
         setTimeout(() => {
           splash.style.display = "none";
-          // <<< CORRIGIDO >>> Mostra o elemento principal '.app'
-          app.style.display = "block"; 
+          // Verifica se o usuário já tem um token salvo
+          if (localStorage.getItem('userAuthToken')) {
+            // Se tem token, mostra o menu principal normalmente.
+            app.style.display = "block";
+            updateLastUpdate();
+          } else {
+            // Se NÃO tem token, força o login imediatamente.
+            // Abre o iframe na página de login.
+            console.log("Nenhum token encontrado. Forçando login.");
+            openPage(WEBAPP_URL + '?page=login', 'Login Obrigatório');
+          }
         }, 400);
       }, 1200);
     });
@@ -1274,21 +1348,27 @@
           vibrate([5]);
         });
       });
-      // ... seu código de prevenção de zoom e áudio sem alterações ...
+
+      // Prevenir zoom
+      document.addEventListener('gesturestart', e => e.preventDefault());
+      document.addEventListener('gesturechange', e => e.preventDefault());
+      document.addEventListener('gestureend', e => e.preventDefault());
+
+      // Habilitar áudio no primeiro toque
+      document.addEventListener('touchstart', function enableAudio() {
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        document.removeEventListener('touchstart', enableAudio);
+      }, { once: true });
     });
 
-    // ==================== GERENCIADOR DE SESSÃO E NAVEGAÇÃO ==================== // <<< SEÇÃO MODIFICADA/ADICIONADA
-
-    /**
-     * // <<< MODIFICADO >>> Abre uma página, agora anexando o token de sessão.
-     * Esta função substitui sua antiga função 'abrir'.
-     * @param {string} baseUrl - A URL do App Script para a página desejada.
-     * @param {string} title - O título a ser exibido no cabeçalho.
-     */
+    // ==================== GERENCIADOR DE SESSÃO E NAVEGAÇÃO ====================
     function openPage(baseUrl, title) {
-      const btn = event.currentTarget;
-      btn.classList.add('loading');
-      
+      // <<< MODIFICADO >>> Captura o evento para evitar erros se não for de um botão.
+      const btn = event?.currentTarget;
+      if (btn) btn.classList.add('loading');
+
       // Lógica para adicionar o token
       const token = localStorage.getItem('userAuthToken');
       let finalUrl = baseUrl;
@@ -1296,88 +1376,85 @@
         finalUrl += (baseUrl.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(token);
       }
       console.log("Abrindo URL no Iframe:", finalUrl);
-      
+
       const iframeContainer = document.getElementById('iframeContainer');
       const iframeContent = document.getElementById('iframeContent');
-      // <<< CORRIGIDO >>> Usando o ID do span no cabeçalho do iframe.
       const iframeHeaderTitle = document.querySelector('#iframeHeader span');
 
       iframeHeaderTitle.textContent = title;
       iframeContent.src = finalUrl;
 
       setTimeout(() => {
-        // <<< CORRIGIDO >>> Esconde o app principal, mostra o iframeContainer
         document.querySelector('.app').style.display = 'none';
         iframeContainer.style.display = 'flex';
         document.body.style.overflow = 'hidden';
-        btn.classList.remove('loading');
-        showToast(`Abrindo ${title}...`);
-      }, 200); // Reduzido para uma transição mais rápida
+        if (btn) btn.classList.remove('loading');
+        // Só mostra o toast se não for a tela de login inicial
+        if (title !== 'Login Obrigatório') {
+          showToast(`Abrindo ${title}...`);
+        }
+      }, 200);
     }
 
-    /**
-     * // <<< MODIFICADO >>> Fecha o iframe. Substitui sua antiga função 'voltar'.
-     */
     function closeIframe() {
       playClickSound();
       vibrate([5]);
-      
       const container = document.getElementById('iframeContainer');
       container.classList.add('closing');
-      
+
       setTimeout(() => {
         container.style.display = 'none';
         container.classList.remove('closing');
-        // <<< CORRIGIDO >>> Mostra o app principal novamente
         document.querySelector('.app').style.display = 'block';
-        document.getElementById('iframeContent').src = 'about:blank'; // Limpa o iframe
+        document.getElementById('iframeContent').src = 'about:blank';
         document.body.style.overflow = '';
       }, 300);
     }
 
-    /**
-     * // <<< ADICIONADO >>> Ouve a mensagem com o token vinda do iframe de login.
-     */
-    window.addEventListener('message', function(event) {
-      // Verificação de segurança básica
+    window.addEventListener('message', function (event) {
       if (event.data && event.data.type === 'AUTH_TOKEN' && event.data.token) {
         const token = event.data.token;
-        console.log('Token de autenticação recebido e armazenado:', token);
-        
-        // 1. Armazena o token no lugar certo: o localStorage do seu app.
+        console.log('Token recebido e armazenado:', token);
+
         localStorage.setItem('userAuthToken', token);
-        
-        // 2. Dá um feedback ao usuário.
         playSuccessSound();
         showToast('Login realizado com sucesso!');
-        
-        // 3. Recarrega o iframe para a página que o usuário queria acessar,
-        //    mas agora com o token, para que o login seja efetivado.
+
         const iframeContent = document.getElementById('iframeContent');
         const originalUrl = iframeContent.src;
+
+        // Se o login foi forçado no início, o usuário vai para o menu principal.
+        if (originalUrl.includes("page=login")) {
+          closeIframe(); // Fecha o iframe de login e volta para o menu.
+          updateLastUpdate();
+          return;
+        }
+
+        // Se o login aconteceu ao clicar num item, ele recarrega o iframe para esse item.
         const finalUrl = originalUrl + (originalUrl.includes('?') ? '&' : '?') + 'token=' + token;
-        
-        iframeContent.src = finalUrl; // Recarrega o iframe
+        iframeContent.src = finalUrl;
       }
     });
+
+
 
     // ==================== BUSCA ====================
     function filterCards() {
       const search = document.getElementById('searchInput').value.toLowerCase();
       const buttons = document.querySelectorAll('.btn');
-      
+
       buttons.forEach(btn => {
         const searchText = btn.getAttribute('data-search') || '';
         const title = btn.querySelector('.title').textContent.toLowerCase();
         const subtitle = btn.querySelector('.subtitle').textContent.toLowerCase();
-        
-        const matches = searchText.includes(search) || 
-                       title.includes(search) || 
-                       subtitle.includes(search);
-        
+
+        const matches = searchText.includes(search) ||
+          title.includes(search) ||
+          subtitle.includes(search);
+
         btn.style.display = matches ? 'flex' : 'none';
       });
-      
+
       if (search) {
         vibrate([3]);
       }
@@ -1388,7 +1465,7 @@
       const toast = document.getElementById('toast');
       toast.textContent = message;
       toast.classList.add('show');
-      
+
       setTimeout(() => {
         toast.classList.remove('show');
       }, duration);
@@ -1409,7 +1486,7 @@
       if (window.scrollY === 0 && document.getElementById('menu').style.display !== 'none') {
         touchEndY = e.touches[0].clientY;
         const pullDistance = touchEndY - touchStartY;
-        
+
         if (pullDistance > 80 && !isPulling) {
           isPulling = true;
           document.getElementById('pullToRefresh').classList.add('show');
@@ -1441,7 +1518,7 @@
       document.getElementById('statusText').textContent = 'Online';
       document.getElementById('onlineBanner').classList.add('show');
       playSuccessSound();
-      
+
       setTimeout(() => {
         document.getElementById('onlineBanner').classList.remove('show');
       }, 3000);
@@ -1452,7 +1529,7 @@
       document.getElementById('statusText').textContent = 'Offline';
       document.getElementById('offlineBanner').classList.add('show');
       vibrate([20, 10, 20]);
-      
+
       setTimeout(() => {
         document.getElementById('offlineBanner').classList.remove('show');
       }, 5000);
@@ -1498,7 +1575,7 @@
       saveSettings();
       vibrate([5]);
       playClickSound();
-      
+
       if (settings.notifications && 'Notification' in window) {
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
@@ -1516,21 +1593,16 @@
     function clearCache() {
       playClickSound();
       vibrate([5]);
-      
       if (confirm('Deseja limpar o cache e os dados de sessão?')) {
-        // <<< MODIFICADO >>> Limpa também o token de autenticação
-        localStorage.removeItem('userAuthToken'); 
-        localStorage.removeItem('tubaSettings'); // Mantém a limpeza das configs
-
-        if ('caches' in window) {
-          caches.keys().then(names => {
-            names.forEach(name => caches.delete(name));
-          });
-        }
-        showToast('Sessão e cache limpos!');
+        // <<< CORRIGIDO >>> Limpa o token correto
+        localStorage.removeItem('userAuthToken');
+        localStorage.removeItem('tubaSettings');
+        if ('caches' in window) { caches.keys().then(names => { names.forEach(name => caches.delete(name)); }); }
+        showToast('Sessão e cache limpos! O app será recarregado.');
         setTimeout(() => window.location.reload(), 1500);
       }
     }
+
 
     // ==================== MODAL ====================
     function showModal(title, body, confirmText = 'OK', onConfirm = null) {
@@ -1538,14 +1610,14 @@
       document.getElementById('modalBody').textContent = body;
       document.getElementById('modalConfirm').textContent = confirmText;
       document.getElementById('modal').classList.add('show');
-      
+
       if (onConfirm) {
         document.getElementById('modalConfirm').onclick = () => {
           onConfirm();
           closeModal();
         };
       }
-      
+
       playClickSound();
       vibrate([5]);
     }
@@ -1558,7 +1630,7 @@
 
     function showInfo() {
       showModal(
-        'TUBA v2.0',
+        'TUBA v2.1',
         'Sistema de gestão integrada para TUBA Ferramentaria. Desenvolvido para otimizar processos e aumentar a produtividade.',
         'Fechar'
       );
@@ -1584,10 +1656,8 @@
     }
 
     // ==================== PREVENIR COMPORTAMENTO PADRÃO ====================
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('selectstart', e => {
-      if (e.target.tagName !== 'INPUT') e.preventDefault();
-    });
+     document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('selectstart', e => { if (e.target.tagName !== 'INPUT') e.preventDefault(); });
   </script>
 </body>
 
