@@ -1375,13 +1375,9 @@
       document.getElementById('loginIframe').src = BASE_URL;
       document.getElementById('menu').style.display = 'none';
       document.getElementById('splash').style.display = 'none';
-      
-      // Iniciar verificação periódica de autenticação
-      iniciarVerificacaoLogin();
     }
 
     function esconderLogin() {
-      pararVerificacaoLogin();
       document.getElementById('loginScreen').classList.remove('show');
       document.getElementById('loginIframe').src = '';
       document.getElementById('menu').style.display = 'block';
@@ -1418,77 +1414,10 @@
       showToast('Logout realizado com sucesso');
     }
 
-    // Variável para controlar polling de autenticação
-    let loginCheckInterval = null;
-
-    // Função para verificar se o login foi concluído
-    async function verificarLoginConcluido() {
-      try {
-        // Tentar fazer uma requisição para verificar se há uma sessão ativa
-        const response = await fetch(`${BASE_URL}?page=checkAuth`, {
-          credentials: 'include' // Importante para incluir cookies de sessão
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          
-          // Se retornou autenticado com token
-          if (data.authenticated && data.token) {
-            // Parar o polling
-            if (loginCheckInterval) {
-              clearInterval(loginCheckInterval);
-              loginCheckInterval = null;
-            }
-            
-            // Salvar token e prosseguir
-            saveToken(data.token);
-            esconderLogin();
-            showToast('Login realizado com sucesso!');
-            playSuccessSound();
-            vibrate([10, 5, 10]);
-            return true;
-          }
-        }
-      } catch (error) {
-        console.log('Verificando autenticação...', error);
-      }
-      return false;
-    }
-
-    // Iniciar verificação periódica de login
-    function iniciarVerificacaoLogin() {
-      // Limpar qualquer intervalo existente
-      if (loginCheckInterval) {
-        clearInterval(loginCheckInterval);
-      }
-      
-      // Verificar a cada 2 segundos se o usuário foi autenticado
-      loginCheckInterval = setInterval(async () => {
-        await verificarLoginConcluido();
-      }, 2000);
-      
-      // Parar após 5 minutos (timeout)
-      setTimeout(() => {
-        if (loginCheckInterval) {
-          clearInterval(loginCheckInterval);
-          loginCheckInterval = null;
-        }
-      }, 300000);
-    }
-
-    // Parar verificação de login
-    function pararVerificacaoLogin() {
-      if (loginCheckInterval) {
-        clearInterval(loginCheckInterval);
-        loginCheckInterval = null;
-      }
-    }
-
     // Listener para mensagens do iframe de login
     window.addEventListener('message', function(event) {
       // Validar origem por segurança (aceitar do Google Apps Script)
       if (event.data && event.data.type === 'LOGIN_SUCCESS' && event.data.token) {
-        pararVerificacaoLogin();
         saveToken(event.data.token);
         esconderLogin();
         showToast('Login realizado com sucesso!');
@@ -1496,7 +1425,6 @@
         vibrate([10, 5, 10]);
       } else if (event.data && event.data.type === 'AUTH_ERROR') {
         // Token expirado ou inválido
-        pararVerificacaoLogin();
         limparToken();
         voltar();
         mostrarLogin();
