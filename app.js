@@ -6,21 +6,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================================
 
     const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec";
-    
+
     // Seleciona os principais elementos da tela
     const splashScreen = document.getElementById('splash');
     const loginScreen = document.getElementById('loginScreen');
     const loginIframe = document.getElementById('loginIframe');
     const mainApp = document.querySelector('.app');
-    
+
     const iframeContainer = document.getElementById('iframeContainer');
     const iframeContent = document.getElementById('iframeContent');
     const iframeHeaderTitle = document.querySelector('#iframeHeader span');
     const closeIframeBtn = document.getElementById('closeIframeBtn');
 
     // =========================================================================
-    // CORREÇÃO: "OUVINTE" DE MENSAGENS PARA O LOGIN
-    // Esta é a parte que resolve o seu problema.
+    // CORREÇÃO FINAL: OUVINTE DE MENSAGEM AJUSTADO
     // =========================================================================
 
     window.addEventListener("message", (event) => {
@@ -28,20 +27,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Verifica se a mensagem recebida é a de login com o token
         if (data && data.type === 'login_token' && data.token) {
+
             console.log("SUCESSO: Token de login recebido pela página principal!", data.token);
 
-            // 1. Salva o token no armazenamento local do navegador
             try {
+                // 1. Salva o token no armazenamento local
                 localStorage.setItem('token', data.token);
-            } catch (e) {
-                console.error("Não foi possível salvar o token no localStorage.", e);
-            }
 
-            // 2. Esconde a tela de login
-            loginScreen.classList.remove('show');
-            
-            // 3. Inicia o aplicativo principal
-            initializeApp(data.token);
+                // 2. MOSTRA um overlay de "carregando" para o usuário
+                document.querySelector('.loading-overlay').classList.add('show');
+
+                // 3. RECARREGA a página após um breve momento.
+                // Ao recarregar, a lógica `init()` encontrará o token e iniciará o app corretamente.
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500); // Meio segundo de delay
+
+            } catch (e) {
+                console.error("Erro ao processar o token e redirecionar:", e);
+                alert("Login bem-sucedido, mas houve um erro ao iniciar sua sessão.");
+            }
         }
     });
 
@@ -91,13 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // (Isso é uma melhoria importante para o futuro)
         // Por exemplo, você pode atualizar os `onclick` dos botões aqui.
     }
-    
+
     // =========================================================================
     // FUNCIONALIDADES DOS BOTÕES E IFRAMES (do seu HTML)
     // =========================================================================
 
     // Função global para ser chamada pelo `onclick` dos botões
-    window.abrir = function(url, titulo) {
+    window.abrir = function (url, titulo) {
         const token = localStorage.getItem('token');
         if (!token) {
             showLogin();
@@ -108,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Adiciona o token à URL que será aberta no iframe
         const urlComToken = url + (url.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(token);
-        
+
         iframeHeaderTitle.textContent = titulo;
         iframeContent.src = urlComToken;
         iframeContainer.style.display = 'flex';
