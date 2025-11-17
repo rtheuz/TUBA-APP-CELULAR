@@ -926,10 +926,56 @@
       margin-bottom: 12px;
       border-radius: 14px;
     }
+
+    /* Login Screen */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-primary);
+      z-index: 10001;
+      display: none;
+      flex-direction: column;
+    }
+
+    #loginScreen.show {
+      display: flex;
+    }
+
+    #loginHeader {
+      background: rgba(28, 28, 30, 0.95);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      padding: calc(var(--safe-area-top) + 16px) 20px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 0.5px solid var(--separator);
+    }
+
+    #loginHeader h2 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    #loginIframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      background: white;
+    }
   </style>
 </head>
 
 <body>
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen">
+    <div id="loginHeader">
+      <h2>Login - TUBA</h2>
+    </div>
+    <iframe id="loginIframe"></iframe>
+  </div>
+
   <!-- SPLASH SCREEN -->
   <div id="splash">
     <audio id="splashSound">
@@ -1018,6 +1064,12 @@
     <div class="settings-section">
       <button class="modal-btn primary" onclick="clearCache()" style="width: 100%;">
         🗑️ Limpar cache
+      </button>
+    </div>
+
+    <div class="settings-section">
+      <button class="modal-btn secondary" onclick="logout()" style="width: 100%;">
+        🚪 Sair
       </button>
     </div>
   </div>
@@ -1207,6 +1259,8 @@
 
   <script>
     // ==================== CONFIGURAÇÕES ====================
+    const BASE_URL = 'https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec';
+    
     let settings = {
       sound: true,
       haptic: true,
@@ -1303,8 +1357,84 @@
       }
     }
 
+    // ==================== AUTENTICAÇÃO ====================
+    function getToken() {
+      return localStorage.getItem('authToken');
+    }
+
+    function saveToken(token) {
+      localStorage.setItem('authToken', token);
+    }
+
+    function limparToken() {
+      localStorage.removeItem('authToken');
+    }
+
+    function mostrarLogin() {
+      document.getElementById('loginScreen').classList.add('show');
+      document.getElementById('loginIframe').src = BASE_URL;
+      document.getElementById('menu').style.display = 'none';
+      document.getElementById('splash').style.display = 'none';
+    }
+
+    function esconderLogin() {
+      document.getElementById('loginScreen').classList.remove('show');
+      document.getElementById('loginIframe').src = '';
+      document.getElementById('menu').style.display = 'block';
+    }
+
+    async function verificarToken() {
+      const token = getToken();
+      if (!token) {
+        mostrarLogin();
+        return false;
+      }
+
+      try {
+        const response = await fetch(`${BASE_URL}?page=validate&token=${token}`);
+        if (!response.ok) {
+          limparToken();
+          mostrarLogin();
+          return false;
+        }
+        return true;
+      } catch (error) {
+        console.error('Erro ao verificar token:', error);
+        // Em caso de erro de rede, mantemos o token e tentamos continuar
+        return true;
+      }
+    }
+
+    function logout() {
+      playClickSound();
+      vibrate([5]);
+      limparToken();
+      closeSettings();
+      mostrarLogin();
+      showToast('Logout realizado com sucesso');
+    }
+
+    // Listener para mensagens do iframe de login
+    window.addEventListener('message', function(event) {
+      // Validar origem por segurança (aceitar do Google Apps Script)
+      if (event.data && event.data.type === 'LOGIN_SUCCESS' && event.data.token) {
+        saveToken(event.data.token);
+        esconderLogin();
+        showToast('Login realizado com sucesso!');
+        playSuccessSound();
+        vibrate([10, 5, 10]);
+      } else if (event.data && event.data.type === 'AUTH_ERROR') {
+        // Token expirado ou inválido
+        limparToken();
+        voltar();
+        mostrarLogin();
+        showToast('Sessão expirada. Faça login novamente.');
+        vibrate([20, 10, 20]);
+      }
+    });
+
     // ==================== SPLASH SCREEN ====================
-    window.addEventListener("load", () => {
+    window.addEventListener("load", async () => {
       loadSettings();
 
       const splash = document.getElementById("splash");
@@ -1321,12 +1451,18 @@
 
       vibrate([20, 10, 20]);
 
-      setTimeout(() => {
+      // Verificar autenticação após o splash
+      setTimeout(async () => {
         splash.style.opacity = "0";
-        setTimeout(() => {
+        setTimeout(async () => {
           splash.style.display = "none";
-          menu.style.display = "block";
-          updateLastUpdate();
+          
+          // Verificar se há token válido
+          const isAuthenticated = await verificarToken();
+          if (isAuthenticated) {
+            menu.style.display = "block";
+            updateLastUpdate();
+          }
         }, 400);
       }, 1200);
     });
@@ -1357,6 +1493,16 @@
 
     // ==================== NAVEGAÇÃO ====================
     function abrir(url, title) {
+      const token = getToken();
+      if (!token) {
+        mostrarLogin();
+        return;
+      }
+
+      // Adicionar token à URL
+      const separator = url.includes('?') ? '&' : '?';
+      const urlComToken = `${url}${separator}token=${token}`;
+
       const btn = event.currentTarget;
       btn.classList.add('loading');
 
@@ -1364,7 +1510,7 @@
         document.getElementById('menu').style.display = 'none';
         document.getElementById('iframeContainer').style.display = 'flex';
         document.getElementById('iframeTitle').textContent = title;
-        document.getElementById('iframeContent').src = url;
+        document.getElementById('iframeContent').src = urlComToken;
         document.body.style.overflow = 'hidden';
 
         btn.classList.remove('loading');
