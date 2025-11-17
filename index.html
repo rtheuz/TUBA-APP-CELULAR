@@ -1366,6 +1366,7 @@
 
     // ==================== GERENCIADOR DE SESSÃO E NAVEGAÇÃO ====================
     function openPage(baseUrl, title) {
+
       // <<< MODIFICADO >>> Captura o evento para evitar erros se não for de um botão.
       const btn = event?.currentTarget;
       if (btn) btn.classList.add('loading');
@@ -1436,9 +1437,6 @@
         iframeContent.src = finalUrl;
       }
     });
-
-
-
     // ==================== BUSCA ====================
     function filterCards() {
       const search = document.getElementById('searchInput').value.toLowerCase();
