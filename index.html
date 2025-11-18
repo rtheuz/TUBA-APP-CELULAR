@@ -1405,14 +1405,27 @@
       }
     }
 
-    // ==================== TOAST ====================
+    let toastTimeout = null;
+
     function showToast(message, duration = 3000) {
       const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.classList.add('show');
 
-      setTimeout(() => {
+      // Limpar timeout anterior se existir
+      if (toastTimeout) {
+        clearTimeout(toastTimeout);
         toast.classList.remove('show');
+      }
+
+      toast.textContent = message;
+
+      // Pequeno delay para garantir a animação
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+        toastTimeout = null;
       }, duration);
     }
 
@@ -1595,7 +1608,7 @@
     }
 
     // ==================== PREVENIR COMPORTAMENTO PADRÃO ====================
-     document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('selectstart', e => { if (e.target.tagName !== 'INPUT') e.preventDefault(); });
   </script>
 </body>
