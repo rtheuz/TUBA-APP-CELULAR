@@ -1273,9 +1273,7 @@
         splash.style.opacity = "0";
         setTimeout(() => {
           splash.style.display = "none";
-          // Verifica se o usuário já tem um token salvo
           if (localStorage.getItem('userAuthToken')) {
-            // Se tem token, mostra o menu principal normalmente.
             app.style.display = "block";
             updateLastUpdate();
           } else {
