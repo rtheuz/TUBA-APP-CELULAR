@@ -1,4 +1,4 @@
-const CACHE_NAME = "tuba-cache-v5"; // atualize o número a cada grande mudança
+const CACHE_NAME = "tuba-cache-v6"; // atualize o número a cada grande mudança
 const URLS_TO_CACHE = [
   "./",
   "./index.html",
