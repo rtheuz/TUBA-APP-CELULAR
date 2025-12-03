@@ -37,3 +37,115 @@ self.addEventListener("fetch", event => {
     })
   );
 });
+
+// ==================== NOTIFICAÇÕES PUSH ====================
+
+// Recebe mensagens push do servidor
+self.addEventListener("push", event => {
+  console.log("Push recebido:", event);
+  
+  let notificationData = {
+    title: "TUBA",
+    body: "Você tem uma nova notificação",
+    icon: "https://i.imgur.com/Msjz5L5.png",
+    badge: "https://i.imgur.com/Msjz5L5.png",
+    tag: "tuba-notification",
+    requireInteraction: false,
+    vibrate: [200, 100, 200],
+    data: {
+      url: "./index.html"
+    }
+  };
+
+  // Se a mensagem push contém dados, usa eles
+  if (event.data) {
+    try {
+      const data = event.data.json();
+      notificationData = {
+        ...notificationData,
+        ...data,
+        icon: data.icon || notificationData.icon,
+        badge: data.badge || notificationData.badge
+      };
+    } catch (e) {
+      // Se não for JSON, tenta como texto
+      notificationData.body = event.data.text() || notificationData.body;
+    }
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(notificationData.title, {
+      body: notificationData.body,
+      icon: notificationData.icon,
+      badge: notificationData.badge,
+      tag: notificationData.tag,
+      requireInteraction: notificationData.requireInteraction,
+      vibrate: notificationData.vibrate,
+      data: notificationData.data,
+      actions: notificationData.actions || [],
+      silent: false
+    })
+  );
+});
+
+// Quando o usuário clica na notificação
+self.addEventListener("notificationclick", event => {
+  console.log("Notificação clicada:", event);
+  
+  event.notification.close();
+
+  const urlToOpen = event.notification.data?.url || "./index.html";
+
+  event.waitUntil(
+    clients.matchAll({
+      type: "window",
+      includeUncontrolled: true
+    }).then(clientList => {
+      // Verifica se já existe uma janela/tab aberta
+      for (let i = 0; i < clientList.length; i++) {
+        const client = clientList[i];
+        if (client.url === urlToOpen && "focus" in client) {
+          return client.focus();
+        }
+      }
+      // Se não existe, abre uma nova janela
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});
+
+// Quando a notificação é fechada
+self.addEventListener("notificationclose", event => {
+  console.log("Notificação fechada:", event);
+});
+
+// ==================== BACKGROUND SYNC ====================
+
+// Sincronização em background (quando o app volta online)
+self.addEventListener("sync", event => {
+  console.log("Background sync:", event.tag);
+  
+  if (event.tag === "sync-data") {
+    event.waitUntil(
+      // Aqui você pode adicionar lógica para sincronizar dados
+      // Por exemplo, enviar dados que ficaram pendentes
+      Promise.resolve()
+    );
+  }
+});
+
+// ==================== PERIODIC BACKGROUND SYNC ====================
+
+// Sincronização periódica (requer permissão especial)
+self.addEventListener("periodicsync", event => {
+  console.log("Periodic sync:", event.tag);
+  
+  if (event.tag === "update-check") {
+    event.waitUntil(
+      // Verificar atualizações periodicamente
+      Promise.resolve()
+    );
+  }
+});

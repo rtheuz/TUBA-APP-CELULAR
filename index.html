@@ -3,16 +3,45 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no,maximum-scale=1.0" />
+  
+  <!-- PWA Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="TUBA">
+  <meta name="description" content="Sistema de gestão integrada para TUBA Ferramentaria">
+  <meta name="keywords" content="TUBA, Ferramentaria, Gestão, Produtividade">
+  <meta name="author" content="TUBA Ferramentaria">
+  
+  <!-- iOS Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="Sistema de gestão TUBA Ferramentaria">
-  <title>TUBA</title>
-  <link rel="icon" href="https://i.imgur.com/Msjz5L5.png">
+  <meta name="apple-mobile-web-app-title" content="TUBA">
   <link rel="apple-touch-icon" href="https://i.imgur.com/Msjz5L5.png">
-  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" sizes="72x72" href="https://i.imgur.com/Msjz5L5.png">
+  <link rel="apple-touch-icon" sizes="96x96" href="https://i.imgur.com/Msjz5L5.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="https://i.imgur.com/Msjz5L5.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="https://i.imgur.com/Msjz5L5.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="https://i.imgur.com/Msjz5L5.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="https://i.imgur.com/Msjz5L5.png">
+  <link rel="apple-touch-icon" sizes="384x384" href="https://i.imgur.com/Msjz5L5.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="https://i.imgur.com/Msjz5L5.png">
+  <link rel="apple-touch-startup-image" href="https://i.imgur.com/Msjz5L5.png">
+  
+  <!-- Android/Chrome Meta Tags -->
   <meta name="theme-color" content="#000000">
+  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="msapplication-TileImage" content="https://i.imgur.com/Msjz5L5.png">
+  <meta name="msapplication-navbutton-color" content="#000000">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="https://i.imgur.com/Msjz5L5.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://i.imgur.com/Msjz5L5.png">
+  <link rel="shortcut icon" href="https://i.imgur.com/Msjz5L5.png">
+  
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <title>TUBA</title>
   <style>
     :root {
       --primary: #007AFF;
@@ -945,6 +974,12 @@
         </div>
         <div class="toggle" id="notifToggle" onclick="toggleNotifications()"></div>
       </div>
+      <div class="setting-item" style="cursor: pointer;" onclick="testNotification()">
+        <div class="info">
+          <div class="title">Testar Notificação</div>
+          <div class="description">Enviar uma notificação de teste</div>
+        </div>
+      </div>
     </div>
 
     <div class="settings-section">
@@ -1294,6 +1329,13 @@
             console.log("Nenhum token encontrado. Forçando login.");
             openPage(WEBAPP_URL + '?page=login&embedded=1', 'Login Obrigatório');
           }
+          
+          // Solicita permissão de notificação se estiver habilitada
+          if (settings.notifications && 'Notification' in window && Notification.permission === 'default') {
+            setTimeout(() => {
+              requestNotificationPermission();
+            }, 2000);
+          }
         }, 400);
       }, 1200);
     });
@@ -1533,6 +1575,106 @@
       vibrate([5]);
     }
 
+    // ==================== NOTIFICAÇÕES PUSH ====================
+    let pushSubscription = null;
+
+    async function requestNotificationPermission() {
+      if (!('Notification' in window)) {
+        console.log('Este navegador não suporta notificações');
+        return false;
+      }
+
+      if (Notification.permission === 'granted') {
+        console.log('Permissão de notificação já concedida');
+        await subscribeToPush();
+        return true;
+      }
+
+      if (Notification.permission !== 'denied') {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          console.log('Permissão de notificação concedida');
+          await subscribeToPush();
+          return true;
+        } else {
+          console.log('Permissão de notificação negada');
+          return false;
+        }
+      }
+
+      return false;
+    }
+
+    async function subscribeToPush() {
+      if (!serviceWorkerRegistration) {
+        console.log('Service Worker não está registrado');
+        return;
+      }
+
+      try {
+        // Para notificações push reais, você precisaria de um servidor com VAPID keys
+        // Por enquanto, vamos apenas garantir que as notificações locais funcionem
+        console.log('Preparado para receber notificações push');
+        
+        // Exemplo de como seria a subscrição (requer backend com VAPID keys):
+        /*
+        const subscription = await serviceWorkerRegistration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array('SEU_VAPID_PUBLIC_KEY')
+        });
+        
+        pushSubscription = subscription;
+        console.log('Inscrito para push:', subscription);
+        
+        // Enviar subscription para seu servidor
+        await sendSubscriptionToServer(subscription);
+        */
+      } catch (error) {
+        console.error('Erro ao inscrever para push:', error);
+      }
+    }
+
+    // Função para enviar notificação local (para testes)
+    async function sendLocalNotification(title, options = {}) {
+      if (!serviceWorkerRegistration) {
+        console.log('Service Worker não está registrado');
+        return;
+      }
+
+      const defaultOptions = {
+        body: options.body || 'Nova notificação do TUBA',
+        icon: options.icon || 'https://i.imgur.com/Msjz5L5.png',
+        badge: options.badge || 'https://i.imgur.com/Msjz5L5.png',
+        tag: options.tag || 'tuba-notification',
+        requireInteraction: options.requireInteraction || false,
+        vibrate: options.vibrate || [200, 100, 200],
+        data: options.data || { url: './index.html' },
+        silent: false
+      };
+
+      await serviceWorkerRegistration.showNotification(title, defaultOptions);
+    }
+
+    // Função para agendar notificação periódica (exemplo)
+    async function schedulePeriodicNotifications() {
+      if (!serviceWorkerRegistration || !('periodicSync' in serviceWorkerRegistration)) {
+        console.log('Periodic Background Sync não suportado');
+        return;
+      }
+
+      try {
+        const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+        if (status.state === 'granted') {
+          await serviceWorkerRegistration.periodicSync.register('update-check', {
+            minInterval: 24 * 60 * 60 * 1000 // 24 horas
+          });
+          console.log('Sincronização periódica registrada');
+        }
+      } catch (error) {
+        console.error('Erro ao registrar sincronização periódica:', error);
+      }
+    }
+
     function toggleNotifications() {
       settings.notifications = !settings.notifications;
       updateSettingsUI();
@@ -1540,10 +1682,12 @@
       vibrate([5]);
       playClickSound();
 
-      if (settings.notifications && 'Notification' in window) {
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
+      if (settings.notifications) {
+        requestNotificationPermission().then(granted => {
+          if (granted) {
             showToast('Notificações ativadas!');
+            // Agendar notificações periódicas se suportado
+            schedulePeriodicNotifications();
           } else {
             settings.notifications = false;
             updateSettingsUI();
@@ -1551,7 +1695,25 @@
             showToast('Permissão negada');
           }
         });
+      } else {
+        showToast('Notificações desativadas');
       }
+    }
+
+    // Função auxiliar para converter VAPID key (se necessário no futuro)
+    function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
     }
 
     function clearCache() {
@@ -1612,10 +1774,99 @@
       document.getElementById('lastUpdate').textContent = formatted;
     }
 
+    // ==================== TESTE DE NOTIFICAÇÃO ====================
+    async function testNotification() {
+      playClickSound();
+      vibrate([5]);
+      
+      if (!serviceWorkerRegistration) {
+        showToast('Service Worker não está registrado. Aguarde alguns segundos e tente novamente.');
+        return;
+      }
+
+      if (Notification.permission !== 'granted') {
+        const granted = await requestNotificationPermission();
+        if (!granted) {
+          showToast('Permissão de notificação necessária');
+          return;
+        }
+      }
+
+      await sendLocalNotification('Teste de Notificação TUBA', {
+        body: 'Esta é uma notificação de teste. Funciona mesmo com o app fechado!',
+        tag: 'test-notification',
+        vibrate: [200, 100, 200, 100, 200]
+      });
+
+      showToast('Notificação de teste enviada!');
+    }
+
+    // ==================== EXEMPLO: NOTIFICAÇÃO AUTOMÁTICA ====================
+    // Esta função pode ser chamada quando houver eventos importantes
+    // Por exemplo: novo pedido, atualização de status, etc.
+    async function sendNotification(title, body, data = {}) {
+      if (!settings.notifications || Notification.permission !== 'granted') {
+        return;
+      }
+
+      if (!serviceWorkerRegistration) {
+        console.log('Service Worker não está registrado');
+        return;
+      }
+
+      await sendLocalNotification(title, {
+        body: body,
+        data: data,
+        tag: 'tuba-notification',
+        vibrate: [200, 100, 200]
+      });
+    }
+
+    // Exemplo de uso: notificação quando o app volta online
+    window.addEventListener('online', () => {
+      if (settings.notifications) {
+        setTimeout(() => {
+          sendNotification('TUBA Online', 'Sua conexão foi restaurada');
+        }, 1000);
+      }
+    });
+
     // ==================== SERVICE WORKER ====================
+    let serviceWorkerRegistration = null;
+
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        registrations.forEach(registration => registration.unregister());
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registrado com sucesso:', registration.scope);
+            serviceWorkerRegistration = registration;
+            
+            // Verifica se há atualizações do service worker
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  showToast('Nova versão disponível! Recarregue a página.');
+                }
+              });
+            });
+            
+            // Solicita permissão de notificação após registro
+            if (settings.notifications) {
+              requestNotificationPermission();
+            }
+          })
+          .catch(error => {
+            console.error('Erro ao registrar Service Worker:', error);
+          });
+      });
+
+      // Escuta mensagens do service worker
+      navigator.serviceWorker.addEventListener('message', event => {
+        console.log('Mensagem do Service Worker:', event.data);
+        if (event.data && event.data.type === 'SW_READY') {
+          console.log('Service Worker está pronto');
+        }
       });
     }
 

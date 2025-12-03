@@ -1,22 +1,81 @@
 {
-  "name": "TUBA",
+  "name": "TUBA Ferramentaria",
   "short_name": "TUBA",
-  "description": "Painel rápido da TUBA Ferramentaria",
+  "description": "Sistema de gestão integrada para TUBA Ferramentaria",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0b1220",
-  "theme_color": "#0b1220",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "portrait",
+  "prefer_related_applications": false,
+  "categories": ["business", "productivity"],
   "icons": [
     {
       "src": "https://i.imgur.com/Msjz5L5.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.imgur.com/Msjz5L5.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.imgur.com/Msjz5L5.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.imgur.com/Msjz5L5.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.imgur.com/Msjz5L5.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.imgur.com/Msjz5L5.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.imgur.com/Msjz5L5.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "https://i.imgur.com/Msjz5L5.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Projetos",
+      "short_name": "Projetos",
+      "description": "Acessar projetos",
+      "url": "./index.html?shortcut=projetos",
+      "icons": [{ "src": "https://i.imgur.com/rAwvYDB.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Pedidos",
+      "short_name": "Pedidos",
+      "description": "Ver pedidos",
+      "url": "./index.html?shortcut=pedidos",
+      "icons": [{ "src": "https://i.imgur.com/w2y1EzK.png", "sizes": "96x96" }]
     }
   ]
 }
