@@ -629,6 +629,100 @@
       background: white;
     }
 
+    /* Iframe Error State */
+    .iframe-error {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-primary);
+    }
+
+    .iframe-error-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .iframe-error h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .iframe-error p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .iframe-error-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .iframe-error-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .iframe-error-btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .iframe-error-btn.secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .iframe-error-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Loading indicator for iframe */
+    .iframe-loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      z-index: 1;
+    }
+
+    .iframe-loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--bg-secondary);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .iframe-loading-text {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    #iframeContentWrapper {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      overflow: hidden;
+    }
+
     /* Loading Overlay */
     .loading-overlay {
       position: fixed;
@@ -1195,9 +1289,31 @@
   <div id="iframeContainer">
     <div id="iframeHeader">
       <span id="iframeTitle">TUBA</span>
-      <button onclick="voltar()">Voltar</button>
+      <button onclick="closeIframe()">Voltar</button>
     </div>
-    <iframe id="iframeContent"></iframe>
+    <div id="iframeContentWrapper">
+      <div class="iframe-loading" id="iframeLoading">
+        <div class="iframe-loading-spinner"></div>
+        <div class="iframe-loading-text">Carregando...</div>
+      </div>
+      <div class="iframe-error" id="iframeError" style="display: none;">
+        <div class="iframe-error-icon">⚠️</div>
+        <h3>Erro ao carregar página</h3>
+        <p id="iframeErrorMessage">Não foi possível carregar esta página no aplicativo.</p>
+        <div class="iframe-error-actions">
+          <button class="iframe-error-btn primary" id="iframeRetryBtn" onclick="retryIframeLoad()">Tentar novamente</button>
+          <button class="iframe-error-btn secondary" id="iframeOpenBtn" onclick="openInNewTab()">Abrir no navegador</button>
+        </div>
+      </div>
+      <iframe 
+        id="iframeContent" 
+        allow="camera; microphone; geolocation; payment; autoplay; fullscreen; clipboard-read; clipboard-write"
+        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation allow-top-navigation-by-user-activation"
+        loading="eager"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Conteúdo do aplicativo">
+      </iframe>
+    </div>
   </div>
 
   <script>
@@ -1365,11 +1481,20 @@
     });
 
     // ==================== GERENCIADOR DE SESSÃO E NAVEGAÇÃO ====================
-    function openPage(baseUrl, title) {
+    let currentPageUrl = '';
+    let currentPageTitle = '';
+    let iframeLoadTimeout = null;
+    let iframeRetryCount = 0;
+    const MAX_RETRY_COUNT = 2;
+    const IFRAME_LOAD_TIMEOUT = 15000; // 15 segundos
 
+    function openPage(baseUrl, title) {
       // <<< MODIFICADO >>> Captura o evento para evitar erros se não for de um botão.
       const btn = event?.currentTarget;
       if (btn) btn.classList.add('loading');
+
+      // Reset retry count
+      iframeRetryCount = 0;
 
       // Lógica para adicionar o token
       const token = localStorage.getItem('userAuthToken');
@@ -1377,20 +1502,165 @@
       if (token) {
         finalUrl += (baseUrl.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(token);
       }
+      
+      // Adiciona parâmetro para indicar que está em iframe (útil para o servidor)
+      finalUrl += (finalUrl.includes('?') ? '&' : '?') + 'embedded=1';
+      
       console.log("Abrindo URL no Iframe:", finalUrl);
+
+      currentPageUrl = finalUrl;
+      currentPageTitle = title;
 
       const iframeContainer = document.getElementById('iframeContainer');
       const iframeContent = document.getElementById('iframeContent');
+      const iframeContentWrapper = document.getElementById('iframeContentWrapper');
       const iframeHeaderTitle = document.querySelector('#iframeHeader span');
+      const iframeLoading = document.getElementById('iframeLoading');
+      const iframeError = document.getElementById('iframeError');
 
+      // Reset estados
+      iframeError.style.display = 'none';
+      iframeLoading.style.display = 'flex';
       iframeHeaderTitle.textContent = title;
-      iframeContent.src = finalUrl;
 
+      // Limpar timeout anterior se existir
+      if (iframeLoadTimeout) {
+        clearTimeout(iframeLoadTimeout);
+      }
+
+      // Configurar handlers de evento
+      const onLoad = () => {
+        console.log("Iframe carregado com sucesso");
+        iframeLoading.style.display = 'none';
+        if (iframeLoadTimeout) {
+          clearTimeout(iframeLoadTimeout);
+          iframeLoadTimeout = null;
+        }
+        if (btn) btn.classList.remove('loading');
+      };
+
+      const onError = (errorMessage = '') => {
+        console.error("Erro ao carregar iframe:", errorMessage);
+        iframeLoading.style.display = 'none';
+        iframeError.style.display = 'flex';
+        
+        // Mensagem específica para veiculos_list
+        let message = 'Não foi possível carregar esta página.';
+        if (finalUrl.includes('veiculos_list')) {
+          message = 'A página de retorno de veículos pode ter problemas de compatibilidade. Tente abrir no navegador ou verifique sua conexão.';
+        } else if (errorMessage) {
+          message = errorMessage;
+        } else {
+          message = 'Não foi possível carregar esta página. Tente novamente ou abra no navegador.';
+        }
+        
+        document.getElementById('iframeErrorMessage').textContent = message;
+        
+        if (iframeLoadTimeout) {
+          clearTimeout(iframeLoadTimeout);
+          iframeLoadTimeout = null;
+        }
+        if (btn) btn.classList.remove('loading');
+        vibrate([20, 10, 20]);
+      };
+
+      // Remover listeners anteriores
+      iframeContent.removeEventListener('load', onLoad);
+      iframeContent.removeEventListener('error', onError);
+
+      // Adicionar novos listeners
+      iframeContent.addEventListener('load', onLoad, { once: true });
+      iframeContent.addEventListener('error', onError, { once: true });
+
+      // Timeout para detectar se a página não carregou
+      iframeLoadTimeout = setTimeout(() => {
+        console.warn("Timeout ao carregar iframe");
+        // Verifica se o iframe realmente carregou (pode ter carregado mas não disparado o evento)
+        try {
+          const iframeDoc = iframeContent.contentDocument || iframeContent.contentWindow.document;
+          if (!iframeDoc || !iframeDoc.body || iframeDoc.body.innerHTML.trim() === '') {
+            onError();
+          } else {
+            onLoad();
+          }
+        } catch (e) {
+          // CORS ou outro erro - isso é normal para páginas externas
+          // Verifica se o iframe está realmente carregando verificando a URL
+          console.log("Não foi possível verificar conteúdo do iframe (normal para páginas externas):", e);
+          
+          // Para páginas do Google Apps Script, pode levar mais tempo
+          // Dá mais um pouco de tempo antes de considerar erro
+          const isGoogleScript = finalUrl.includes('script.google.com');
+          const extraTime = isGoogleScript ? 5000 : 3000;
+          
+          setTimeout(() => {
+            // Verifica novamente se ainda está carregando
+            if (iframeLoading.style.display !== 'none') {
+              // Tenta uma última verificação
+              try {
+                const iframeWindow = iframeContent.contentWindow;
+                if (iframeWindow && iframeWindow.location) {
+                  // Se conseguiu acessar a location, provavelmente carregou
+                  onLoad();
+                } else {
+                  onError();
+                }
+              } catch (e2) {
+                // Ainda não consegue acessar - pode ser que carregou mas tem CORS
+                // Para Google Apps Script, assume que carregou após esse tempo
+                if (isGoogleScript) {
+                  console.log("Assumindo que página do Google Apps Script carregou (CORS impede verificação)");
+                  onLoad();
+                } else {
+                  onError();
+                }
+              }
+            }
+          }, extraTime);
+        }
+      }, IFRAME_LOAD_TIMEOUT);
+
+      // Tentar carregar a página
+      try {
+        // Para páginas do Google Apps Script, especialmente veiculos_list,
+        // pode ser necessário adicionar parâmetros adicionais para melhor compatibilidade
+        let urlToLoad = finalUrl;
+        
+        // Se for veiculos_list, tenta adicionar parâmetros que podem ajudar
+        if (finalUrl.includes('veiculos_list')) {
+          // Garante que não há parâmetros duplicados
+          if (!urlToLoad.includes('_t=')) {
+            urlToLoad += (urlToLoad.includes('?') ? '&' : '?') + '_t=' + Date.now();
+          }
+        }
+        
+        iframeContent.src = urlToLoad;
+        
+        // Para veiculos_list, também tenta uma verificação adicional após um tempo
+        if (finalUrl.includes('veiculos_list')) {
+          setTimeout(() => {
+            // Verifica se houve algum erro de carregamento
+            try {
+              const iframeWindow = iframeContent.contentWindow;
+              if (!iframeWindow) {
+                console.warn("Iframe window não disponível para veiculos_list");
+              }
+            } catch (e) {
+              console.log("Verificação de iframe window (normal para CORS):", e);
+            }
+          }, 2000);
+        }
+      } catch (e) {
+        console.error("Erro ao definir src do iframe:", e);
+        onError('Erro ao iniciar carregamento da página. Verifique sua conexão.');
+        return;
+      }
+
+      // Mostrar o container
       setTimeout(() => {
         document.querySelector('.app').style.display = 'none';
         iframeContainer.style.display = 'flex';
         document.body.style.overflow = 'hidden';
-        if (btn) btn.classList.remove('loading');
         // Só mostra o toast se não for a tela de login inicial
         if (title !== 'Login Obrigatório') {
           showToast(`Abrindo ${title}...`);
@@ -1398,9 +1668,72 @@
       }, 200);
     }
 
+    function retryIframeLoad() {
+      playClickSound();
+      vibrate([5]);
+      
+      if (iframeRetryCount >= MAX_RETRY_COUNT) {
+        showToast('Muitas tentativas. Tente abrir no navegador.');
+        openInNewTab();
+        return;
+      }
+
+      iframeRetryCount++;
+      console.log(`Tentativa ${iframeRetryCount} de recarregar iframe`);
+      
+      const iframeError = document.getElementById('iframeError');
+      const iframeLoading = document.getElementById('iframeLoading');
+      
+      iframeError.style.display = 'none';
+      iframeLoading.style.display = 'flex';
+
+      // Tenta novamente com a URL atual
+      if (currentPageUrl) {
+        const iframeContent = document.getElementById('iframeContent');
+        
+        // Força recarregamento limpando o src primeiro
+        iframeContent.src = 'about:blank';
+        
+        setTimeout(() => {
+          iframeContent.src = currentPageUrl + (currentPageUrl.includes('?') ? '&' : '?') + '_retry=' + Date.now();
+        }, 100);
+      }
+    }
+
+    function openInNewTab() {
+      playClickSound();
+      vibrate([5]);
+      
+      if (currentPageUrl) {
+        // Remove o parâmetro embedded se existir
+        const urlToOpen = currentPageUrl.replace(/[&?]embedded=1/g, '');
+        window.open(urlToOpen, '_blank');
+        showToast('Abrindo no navegador...');
+        // Fecha o iframe após um breve delay
+        setTimeout(() => {
+          closeIframe();
+        }, 500);
+      } else {
+        showToast('URL não disponível');
+      }
+    }
+
     function closeIframe() {
       playClickSound();
       vibrate([5]);
+      
+      // Limpar timeout se existir
+      if (iframeLoadTimeout) {
+        clearTimeout(iframeLoadTimeout);
+        iframeLoadTimeout = null;
+      }
+      
+      // Reset estados
+      const iframeLoading = document.getElementById('iframeLoading');
+      const iframeError = document.getElementById('iframeError');
+      iframeLoading.style.display = 'flex';
+      iframeError.style.display = 'none';
+      
       const container = document.getElementById('iframeContainer');
       container.classList.add('closing');
 
@@ -1408,12 +1741,17 @@
         container.style.display = 'none';
         container.classList.remove('closing');
         document.querySelector('.app').style.display = 'block';
-        document.getElementById('iframeContent').src = 'about:blank';
+        const iframeContent = document.getElementById('iframeContent');
+        iframeContent.src = 'about:blank';
         document.body.style.overflow = '';
+        currentPageUrl = '';
+        currentPageTitle = '';
+        iframeRetryCount = 0;
       }, 300);
     }
 
     window.addEventListener('message', function (event) {
+      // Mensagem de token de autenticação
       if (event.data && event.data.type === 'AUTH_TOKEN' && event.data.token) {
         const token = event.data.token;
         console.log('Token recebido e armazenado:', token);
@@ -1435,6 +1773,12 @@
         // Se o login aconteceu ao clicar num item, ele recarrega o iframe para esse item.
         const finalUrl = originalUrl + (originalUrl.includes('?') ? '&' : '?') + 'token=' + token;
         iframeContent.src = finalUrl;
+      }
+      
+      // Mensagem para fechar iframe (vinda de páginas como veiculos_list)
+      if (event.data && event.data.type === 'CLOSE_IFRAME') {
+        console.log('Recebida mensagem para fechar iframe');
+        closeIframe();
       }
     });
     // ==================== BUSCA ====================
