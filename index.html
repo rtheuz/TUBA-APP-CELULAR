@@ -626,6 +626,7 @@
       flex: 1;
       border: none;
       width: 100%;
+      height: 100%;
       background: white;
     }
 
@@ -695,11 +696,15 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       gap: 16px;
       z-index: 1;
+    }
+
+    .iframe-loading.show {
+      display: flex;
     }
 
     .iframe-loading-spinner {
@@ -720,7 +725,9 @@
       position: relative;
       flex: 1;
       width: 100%;
+      height: 100%;
       overflow: hidden;
+      background: white;
     }
 
     /* Loading Overlay */
@@ -1507,7 +1514,7 @@
 
       // Reset estados
       iframeError.style.display = 'none';
-      iframeLoading.style.display = 'flex';
+      iframeLoading.classList.add('show');
       iframeHeaderTitle.textContent = title;
 
       // Limpar timeout anterior se existir
@@ -1518,7 +1525,7 @@
       // Configurar handlers de evento
       const onLoad = () => {
         console.log("Iframe carregado com sucesso");
-        iframeLoading.style.display = 'none';
+        iframeLoading.classList.remove('show');
         if (iframeLoadTimeout) {
           clearTimeout(iframeLoadTimeout);
           iframeLoadTimeout = null;
@@ -1528,7 +1535,7 @@
 
       const onError = (errorMessage = '') => {
         console.error("Erro ao carregar iframe:", errorMessage);
-        iframeLoading.style.display = 'none';
+        iframeLoading.classList.remove('show');
         iframeError.style.display = 'flex';
         
         // Mensagem específica para veiculos_list
@@ -1582,7 +1589,7 @@
           
           setTimeout(() => {
             // Verifica novamente se ainda está carregando
-            if (iframeLoading.style.display !== 'none') {
+            if (iframeLoading.classList.contains('show')) {
               // Tenta uma última verificação
               try {
                 const iframeWindow = iframeContent.contentWindow;
@@ -1672,7 +1679,7 @@
       const iframeLoading = document.getElementById('iframeLoading');
       
       iframeError.style.display = 'none';
-      iframeLoading.style.display = 'flex';
+      iframeLoading.classList.add('show');
 
       // Tenta novamente com a URL atual
       if (currentPageUrl) {
@@ -1718,7 +1725,7 @@
       // Reset estados
       const iframeLoading = document.getElementById('iframeLoading');
       const iframeError = document.getElementById('iframeError');
-      iframeLoading.style.display = 'flex';
+      iframeLoading.classList.add('show');
       iframeError.style.display = 'none';
       
       const container = document.getElementById('iframeContainer');
