@@ -69,13 +69,6 @@
       "description": "Acessar projetos",
       "url": "./index.html?shortcut=projetos",
       "icons": [{ "src": "https://i.imgur.com/rAwvYDB.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Pedidos",
-      "short_name": "Pedidos",
-      "description": "Ver pedidos",
-      "url": "./index.html?shortcut=pedidos",
-      "icons": [{ "src": "https://i.imgur.com/w2y1EzK.png", "sizes": "96x96" }]
     }
   ]
 }
