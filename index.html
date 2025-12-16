@@ -551,11 +551,10 @@
       display: none;
       width: 100%;
       height: 100vh;
-      height: 100dvh; /* Usar dynamic viewport height para mobile */
       position: fixed;
       top: 0;
       left: 0;
-      background: white; /* Mudar de var(--bg-primary) para white */
+      background: var(--bg-primary);
       z-index: 9999;
       flex-direction: column;
       animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -627,10 +626,7 @@
       flex: 1;
       border: none;
       width: 100%;
-      height: 100%; /* Adicionar altura explícita */
-      min-height: 100%; /* Garantir altura mínima */
       background: white;
-      display: block; /* Garantir display block */
     }
 
     /* Iframe Error State */
@@ -724,21 +720,7 @@
       position: relative;
       flex: 1;
       width: 100%;
-      height: 100%;
-      overflow: auto; /* Mudar de hidden para auto */
-      -webkit-overflow-scrolling: touch; /* Adicionar para scroll suave no iOS/Android */
-      background: white; /* Adicionar background para evitar flash preto */
-    }
-
-    /* Fix para Android Chrome */
-    @supports (-webkit-touch-callout: none) or (not (-webkit-touch-callout: none)) {
-      #iframeContainer {
-        height: -webkit-fill-available;
-      }
-      
-      #iframeContent {
-        height: -webkit-fill-available;
-      }
+      overflow: hidden;
     }
 
     /* Loading Overlay */
@@ -1160,7 +1142,7 @@
         </h2>
         <div class="grid" data-category="gestao">
           <button class="btn"
-            onclick="openPage('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=orcamentos', 'Projetos')">
+            onclick="openPage('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=projetos', 'Projetos')">
             <div class="icon-wrapper">
               <img class="icon" src="https://i.imgur.com/rAwvYDB.png" alt="Projetos">
               <div class="spinner"></div>
@@ -1168,19 +1150,6 @@
             <div class="label">
               <div class="title">Projetos</div>
               <div class="subtitle">Gerenciar e criar novos projetos</div>
-            </div>
-            <span class="chevron">›</span>
-          </button>
-
-          <button class="btn"
-            onclick="openPage('https://script.google.com/macros/s/AKfycbyqo2sqE_x5VhtQPInTBS4XO78vk-S0Ec2LbgDtbUYVyX98oOA_oh4VRMdrmk8DBWvx6g/exec?page=pedidos', 'Pedidos')">
-            <div class="icon-wrapper">
-              <img class="icon" src="https://i.imgur.com/w2y1EzK.png" alt="Pedidos">
-              <div class="spinner"></div>
-            </div>
-            <div class="label">
-              <div class="title">Pedidos</div>
-              <div class="subtitle">Status e situação de pedidos</div>
             </div>
             <span class="chevron">›</span>
           </button>
@@ -1299,7 +1268,7 @@
         <div class="status-dot" id="statusDot"></div>
         <span id="statusText">Online</span>
       </div>
-      <span>© 2025 TUBA · v2.0</span>
+      <span>© 2025 TUBA · v2.1</span>
     </footer>
   </div>
 
