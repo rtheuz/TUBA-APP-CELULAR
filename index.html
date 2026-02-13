@@ -1537,6 +1537,9 @@
     const MAX_RETRY_COUNT = 2;
     const IFRAME_LOAD_TIMEOUT = 15000; // 15 segundos
 
+    // Páginas que redirecionam para script.google.com e não podem ser exibidas no iframe (X-Frame-Options: sameorigin)
+    const PAGES_OPEN_IN_NEW_TAB = [];
+
     function openPage(baseUrl, title) {
       // <<< MODIFICADO >>> Captura o evento para evitar erros se não for de um botão.
       const btn = event?.currentTarget;
@@ -1550,6 +1553,15 @@
       let finalUrl = baseUrl;
       if (token) {
         finalUrl += (baseUrl.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(token);
+      }
+      
+      // Páginas que não podem ser embutidas: abrir em nova aba
+      const mustOpenInNewTab = PAGES_OPEN_IN_NEW_TAB.some(p => baseUrl.includes('page=' + p));
+      if (mustOpenInNewTab) {
+        if (btn) btn.classList.remove('loading');
+        window.open(finalUrl, '_blank');
+        showToast(title + ' aberto no navegador');
+        return;
       }
       
       // Adiciona parâmetro para indicar que está em iframe (útil para o servidor)
