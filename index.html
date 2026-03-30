@@ -1660,6 +1660,18 @@
       // Configurar handlers de evento
       const onLoad = () => {
         console.log("Iframe carregado com sucesso");
+        // Fallback: captura token pela URL do iframe (caso postMessage não chegue).
+        try {
+          const existing = getStoredAuthToken();
+          if (!existing) {
+            const u = new URL(iframeContent.src, window.location.href);
+            const t = u.searchParams.get('token');
+            if (t) {
+              setStoredAuthToken(t);
+              console.log("Token capturado pela URL do iframe.");
+            }
+          }
+        } catch (e) {}
         iframeLoading.classList.remove('show');
         if (iframeLoadTimeout) {
           clearTimeout(iframeLoadTimeout);
