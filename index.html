@@ -1603,9 +1603,18 @@
       // Reset retry count
       iframeRetryCount = 0;
 
-      // Memoriza a intenção de navegação (antes de qualquer redirect para login)
-      lastRequestedBaseUrl = baseUrl;
-      lastRequestedTitle = title;
+      // Memoriza a intenção de navegação (antes de qualquer redirect para login).
+      // IMPORTANT: não trate "login obrigatório" como destino pós-login,
+      // senão ao receber o token o app recarrega o login (loop/flicker/blank).
+      const isLoginUrl = String(baseUrl || '').includes('page=login');
+      const isLoginTitle = title === 'Login Obrigatório';
+      if (isLoginUrl || isLoginTitle) {
+        lastRequestedBaseUrl = '';
+        lastRequestedTitle = '';
+      } else {
+        lastRequestedBaseUrl = baseUrl;
+        lastRequestedTitle = title;
+      }
 
       // Lógica para adicionar o token
       const token = getStoredAuthToken();
@@ -1883,9 +1892,9 @@
         const iframeContent = document.getElementById('iframeContent');
         const originalUrl = iframeContent.src || '';
 
-        // Se o login foi forçado no início (ou seja, a última intenção também era login),
+        // Se o login foi forçado no início (tela "Login Obrigatório"),
         // fecha o iframe e volta para o menu principal.
-        if (originalUrl.includes("page=login") && (!lastRequestedBaseUrl || lastRequestedBaseUrl.includes("page=login"))) {
+        if (!lastRequestedBaseUrl) {
           closeIframe(); // Fecha o iframe de login e volta para o menu.
           updateLastUpdate();
           return;
