@@ -2133,8 +2133,8 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            subscription: subscription,
-            userId: localStorage.getItem('userAuthToken') // ou outro ID do usuário
+            subscription: subscription.toJSON(),
+            userId: localStorage.getItem('userAuthToken')
           })
         });
 
